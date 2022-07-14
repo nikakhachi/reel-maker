@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { writeFile } from "fs";
 import { executeBash } from "./executeBash";
-import logger from "./logger";
+import logger from "../utils/logger";
 
 export const generateClipsAndItsData = async (nlpData: any, videoId: string) => {
   const currentWorkingDir = process.cwd();

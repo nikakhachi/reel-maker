@@ -1,27 +1,56 @@
 {
-  "name": "reel-mker",
+  "name": "ts-node-template",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./build/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll",
+    "build": "tsc",
+    "dev": "nodemon server.ts",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
-  "keywords": [],
-  "author": "",
+  "author": "Nika Khachiashvili",
   "license": "ISC",
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/dotenv": "^8.2.0",
-    "@types/node": "^18.0.3",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.4",
+    "@types/jest": "^27.4.1",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^17.0.21",
+    "@types/node-cache": "^4.2.5",
+    "@types/tmp": "^0.2.3",
     "@types/uuid": "^8.3.4",
-    "@types/winston": "^2.4.4",
-    "typescript": "^4.7.4"
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.19",
+    "prettier": "^2.5.1",
+    "prisma": "^4.0.0",
+    "ts-jest": "^27.1.3",
+    "ts-node": "^10.6.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.2"
   },
   "dependencies": {
+    "@prisma/client": "^4.0.0",
     "axios": "^0.27.2",
-    "dotenv": "^16.0.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "node-cache": "^5.1.2",
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
-    "winston": "^3.8.1"
+    "winston": "^3.6.0"
   }
 }

@@ -1,19 +1,18 @@
 import * as dotenv from "dotenv";
 dotenv.config();
-import { downloadAndSaveFile } from "./downloadAndSaveFile";
-import { getMp3LinkOfYoutubeVideo } from "./getMp3LinkOfYoutubeVideo";
-import { getNlpResultsForAudio } from "./getNlpResultsForAudio";
-import { generateClipsAndItsData } from "./generateClipsAndItsData";
-import { getMP4LinkOfYoutubeVideo } from "./getMp4LinkOfYoutubeVideo";
-import { executeBash } from "./executeBash";
-import logger from "./logger";
+import { downloadAndSaveFile } from "./services/downloadAndSaveFile";
+import { getMp3LinkOfYoutubeVideo } from "./services/getMp3LinkOfYoutubeVideo";
+import { getNlpResultsForAudio } from "./services/getNlpResultsForAudio";
+import { generateClipsAndItsData } from "./services/generateClipsAndItsData";
+import { getMP4LinkOfYoutubeVideo } from "./services/getMp4LinkOfYoutubeVideo";
+import { executeBash } from "./services/executeBash";
+import logger from "./utils/logger";
 import { writeFile } from "fs";
-import { nlpData } from "./data/nlpresponse";
 
 (async () => {
   try {
     logger.info("");
-    const videoId = "m12fBgVyp2s";
+    const videoId = "82CQbKC7U0w";
     logger.info(videoId);
     const videoUrl = await getMP4LinkOfYoutubeVideo(videoId);
     logger.info(videoUrl);
