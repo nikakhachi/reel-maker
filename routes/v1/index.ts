@@ -4,7 +4,7 @@ import { queueAudioForTranscripting } from "../../services/assemblyAI.service";
 import { getMp3LinkOfYoutubeVideo } from "../../services/getMp3LinkOfYoutubeVideo";
 import { getMP4LinkOfYoutubeVideo } from "../../services/getMp4LinkOfYoutubeVideo";
 import { processVideo } from "../../services/processVideo.service";
-import { BadRequestException, InternalServerErrorException, SuccessResponse } from "../../utils/httpResponses";
+import { BadRequestException, InternalServerErrorException, NotFoundException, SuccessResponse } from "../../utils/httpResponses";
 import logger from "../../utils/logger";
 
 const router = Router();
@@ -48,6 +48,38 @@ router.post("/upload", async (req, res) => {
     uuid: youtubeVideoInDb.id,
   });
   processVideo(videoId, mp3Link, mp4Link, audioTranscriptId, youtubeVideoInDb.id);
+});
+
+router.get("/:youtubeVideoId", async (req, res) => {
+  const { youtubeVideoId } = req.params;
+  const youtubeVideo = await prisma.youtubeVideo.findFirst({
+    where: { id: youtubeVideoId },
+    include: {
+      processedVideos: {
+        select: {
+          metadataUrl: true,
+          subtitlesUrl: true,
+          videoUrl: true,
+          videoType: {
+            select: { name: true },
+          },
+        },
+      },
+    },
+  });
+  if (!youtubeVideo) return new NotFoundException(res);
+  if (youtubeVideo.statusId === 2) return new SuccessResponse(res, "Processing");
+  if (youtubeVideo.statusId === 3) return new SuccessResponse(res, "Error while Processing");
+  const s3BucketUrl = process.env.AWS_S3_BUCKET_URL;
+  return new SuccessResponse(
+    res,
+    youtubeVideo.processedVideos.map((item) => ({
+      ...item,
+      metadataUrl: `${s3BucketUrl}/${item.metadataUrl}`,
+      subtitlesUrl: `${s3BucketUrl}/${item.subtitlesUrl}`,
+      videoUrl: `${s3BucketUrl}/${item.videoUrl}`,
+    }))
+  );
 });
 
 export default router;
