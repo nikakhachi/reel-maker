@@ -14,6 +14,9 @@
   },
   "author": "Nika Khachiashvili",
   "license": "ISC",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
     "@types/axios": "^0.14.0",

@@ -4,6 +4,7 @@ import path from "path";
 import logger from "../utils/logger";
 import { cutVideo } from "./ffmpeg.service";
 import { uploadToS3 } from "../aws";
+import { ProcessedVideo } from "@prisma/client";
 
 export const generateClipsAndItsData = async (nlpData: any, videoFolder: string, originalVideoPath: string, videoId: string) => {
   fs.mkdirSync(path.resolve(path.join(videoFolder, "clips")));
@@ -11,6 +12,13 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
 
   const clipsDirectory = `${videoFolder}/clips/`;
   const shortsDirectory = `${videoFolder}/shorts/`;
+
+  const processedVideos: {
+    videoUrl: string;
+    subtitlesUrl: string;
+    metadataUrl: string;
+    videoTypeId: number;
+  }[] = [];
 
   for (const chapter of nlpData.chapters) {
     const clipId = v4();
@@ -43,11 +51,20 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
     });
 
     logger.debug("uploading to s3");
+    const videoS3Path = `${s3Path}/video.mp4`;
+    const subtitlesS3Path = `${s3Path}/subtitles.json`;
+    const metadataS3Path = `${s3Path}/metadata.json`;
     await Promise.all([
-      uploadToS3(`${s3Path}/video.mp4`, newVideo),
-      uploadToS3(`${s3Path}/subtitles.json`, Buffer.from(JSON.stringify(subtitles), "utf-8")),
-      uploadToS3(`${s3Path}/metadata.json`, Buffer.from(JSON.stringify(chapter), "utf-8")),
+      uploadToS3(videoS3Path, newVideo),
+      uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8")),
+      uploadToS3(metadataS3Path, Buffer.from(JSON.stringify(chapter), "utf-8")),
     ]);
+    processedVideos.push({
+      videoUrl: videoS3Path,
+      subtitlesUrl: subtitlesS3Path,
+      metadataUrl: metadataS3Path,
+      videoTypeId: 1,
+    });
 
     logger.info(`Clip ${chapter.gist} has generated`);
   }
@@ -84,15 +101,26 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
       });
 
       logger.debug("uploading to s3");
+      const videoS3Path = `${s3Path}/video.mp4`;
+      const subtitlesS3Path = `${s3Path}/subtitles.json`;
+      const metadataS3Path = `${s3Path}/metadata.json`;
       await Promise.all([
-        uploadToS3(`${s3Path}/video.mp4`, newVideo),
-        uploadToS3(`${s3Path}/subtitles.json`, Buffer.from(JSON.stringify(subtitles), "utf-8")),
-        uploadToS3(`${s3Path}/metadata.json`, Buffer.from(JSON.stringify(iab), "utf-8")),
+        uploadToS3(videoS3Path, newVideo),
+        uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8")),
+        uploadToS3(metadataS3Path, Buffer.from(JSON.stringify(iab), "utf-8")),
       ]);
+      processedVideos.push({
+        videoUrl: videoS3Path,
+        subtitlesUrl: subtitlesS3Path,
+        metadataUrl: metadataS3Path,
+        videoTypeId: 2,
+      });
 
       logger.info(`short ${shortId} has generated`);
     }
   } else {
     logger.error(`iab categories status is ${nlpData.iab_categories_result.status}`);
   }
+
+  return processedVideos;
 };

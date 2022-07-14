@@ -7,8 +7,15 @@ import path from "path";
 import { FILE_PROCESSING_FOLDER, NODEJS_ROOT_FOLDER } from "../constants";
 import { v4 } from "uuid";
 import { getAudioTranscriptResults } from "./assemblyAI.service";
+import { prisma } from "../prisma";
 
-export const processVideo = async (videoId: string, mp3Url: string, mp4Url: string, audioTranscriptId: string) => {
+export const processVideo = async (
+  videoId: string,
+  mp3Url: string,
+  mp4Url: string,
+  audioTranscriptId: string,
+  youtubeVideoIdInDb: string
+) => {
   try {
     const generatedVideoId = `${videoId}_${v4()}`;
 
@@ -25,9 +32,20 @@ export const processVideo = async (videoId: string, mp3Url: string, mp4Url: stri
     const nlp = await getAudioTranscriptResults(audioTranscriptId);
     fs.writeFile(`${videoFolder}/${generatedVideoId}_NLP.ts`, JSON.stringify(nlp, null, 2), (err) => {});
     logger.info(`Generating Clips..`);
-    await generateClipsAndItsData(nlp, videoFolder, fullOutputPath, generatedVideoId);
+    const processedVideos = await generateClipsAndItsData(nlp, videoFolder, fullOutputPath, generatedVideoId);
     fs.rmdirSync(videoFolder, { recursive: true });
+    await prisma.youtubeVideo.update({
+      where: { id: youtubeVideoIdInDb },
+      data: {
+        statusId: 1,
+        youtubeVideoId: generatedVideoId,
+        processedVideos: {
+          create: processedVideos,
+        },
+      },
+    });
   } catch (error) {
+    await prisma.youtubeVideo.update({ where: { id: youtubeVideoIdInDb }, data: { statusId: 3 } });
     console.log(error);
   }
 };

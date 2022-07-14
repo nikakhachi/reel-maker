@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { prisma } from "../../prisma";
 import { queueAudioForTranscripting } from "../../services/assemblyAI.service";
 import { getMp3LinkOfYoutubeVideo } from "../../services/getMp3LinkOfYoutubeVideo";
 import { getMP4LinkOfYoutubeVideo } from "../../services/getMp4LinkOfYoutubeVideo";
@@ -41,8 +42,12 @@ router.post("/upload", async (req, res) => {
     logger.error("Error Queuing up the Audio for Transcript");
     return new BadRequestException(res);
   }
-  new SuccessResponse(res, videoId);
-  processVideo(videoId, mp3Link, mp4Link, audioTranscriptId);
+  const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2 } });
+  new SuccessResponse(res, {
+    videoId,
+    uuid: youtubeVideoInDb.id,
+  });
+  processVideo(videoId, mp3Link, mp4Link, audioTranscriptId, youtubeVideoInDb.id);
 });
 
 export default router;
