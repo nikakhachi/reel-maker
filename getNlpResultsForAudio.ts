@@ -31,6 +31,7 @@ const queAudioForProcessing = async (audioUrl: string): Promise<{ id: string; st
       .post("/transcript", {
         audio_url: audioUrl,
         auto_chapters: true,
+        iab_categories: true,
       })
       .then(({ data }) => {
         res(data);
@@ -47,7 +48,7 @@ export const getNlpResultsForAudio = async (audioUrl: string) => {
   let response: any;
   do {
     console.log("Waiting couple of seconds to check the status");
-    await new Promise((res, rej) => setTimeout(() => res(""), 20000));
+    await new Promise((res, rej) => setTimeout(() => res(""), 30000));
     const processResult = await checkProcess(status.id);
     statusName = processResult.status;
     console.log("Status is ", statusName);
