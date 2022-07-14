@@ -16,13 +16,18 @@ export const getMP4LinkOfYoutubeVideo = (videoId: string): Promise<string> =>
     axios
       .request(options)
       .then(function ({ data }) {
-        const adaptive480p = (Object.values(data.link) as string[][]).find(
-          (item) => item[3] === "720p" && item[4].includes("video/mp4")
-        )?.[0] as string;
-        if (!adaptive480p) {
-          rej("Cant find 720 video/mp4 link");
+        if (data.status === "ok") {
+          const adaptive480p = (Object.values(data.link) as string[][]).find(
+            (item) => item[3] === "720p" && item[4].includes("video/mp4")
+          )?.[0] as string;
+          if (!adaptive480p) {
+            rej("Cant find 720 video/mp4 link");
+          }
+          console.log(adaptive480p);
+          res(adaptive480p);
+        } else {
+          rej(data);
         }
-        res(adaptive480p);
       })
       .catch(rej);
   });
