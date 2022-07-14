@@ -1,5 +1,4 @@
 import { downloadAndSaveFile } from "./downloadAndSaveFile";
-import { getNlpResultsForAudio } from "./getNlpResultsForAudio";
 import { generateClipsAndItsData } from "./generateClipsAndItsData";
 import { executeBash } from "./executeBash";
 import logger from "../utils/logger";
@@ -7,8 +6,9 @@ import * as fs from "fs";
 import path from "path";
 import { FILE_PROCESSING_FOLDER, NODEJS_ROOT_FOLDER } from "../constants";
 import { v4 } from "uuid";
+import { getAudioTranscriptResults } from "./assemblyAI.service";
 
-export const processVideo = async (videoId: string, mp3Url: string, mp4Url: string) => {
+export const processVideo = async (videoId: string, mp3Url: string, mp4Url: string, audioTranscriptId: string) => {
   try {
     const generatedVideoId = `${videoId}_${v4()}`;
 
@@ -22,7 +22,7 @@ export const processVideo = async (videoId: string, mp3Url: string, mp4Url: stri
     logger.info(`Mixing Mp4 and Mp3..`);
     await executeBash(`ffmpeg -i ${fullMp4Path} -i ${fullMp3Path} -map 0:v -map 1:a -c:v copy -shortest ${fullOutputPath}`);
     logger.info("Getting Nlp Results..");
-    const nlp = await getNlpResultsForAudio(mp3Url);
+    const nlp = await getAudioTranscriptResults(audioTranscriptId);
     fs.writeFile(`${videoFolder}/${generatedVideoId}_NLP.ts`, JSON.stringify(nlp, null, 2), (err) => {});
     logger.info(`Generating Clips..`);
     await generateClipsAndItsData(nlp, videoFolder, fullOutputPath, generatedVideoId);

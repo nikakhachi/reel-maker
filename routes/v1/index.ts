@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { queueAudioForTranscripting } from "../../services/assemblyAI.service";
 import { getMp3LinkOfYoutubeVideo } from "../../services/getMp3LinkOfYoutubeVideo";
 import { getMP4LinkOfYoutubeVideo } from "../../services/getMp4LinkOfYoutubeVideo";
 import { processVideo } from "../../services/processVideo.service";
@@ -15,6 +16,7 @@ router.post("/upload", async (req, res) => {
   const videoId = youtubeVideoUrl.split("?v=")[1].split("&")[0];
   let mp3Link: undefined | string;
   let mp4Link: undefined | string;
+  let audioTranscriptId: undefined | string;
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
   } catch (error: any) {
@@ -32,8 +34,15 @@ router.post("/upload", async (req, res) => {
   } catch (error) {
     return new BadRequestException(res);
   }
+  try {
+    audioTranscriptId = await queueAudioForTranscripting(mp3Link);
+  } catch (error) {
+    console.log(error);
+    logger.error("Error Queuing up the Audio for Transcript");
+    return new BadRequestException(res);
+  }
   new SuccessResponse(res, videoId);
-  processVideo(videoId, mp3Link, mp4Link);
+  processVideo(videoId, mp3Link, mp4Link, audioTranscriptId);
 });
 
 export default router;

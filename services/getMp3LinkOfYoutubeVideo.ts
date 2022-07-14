@@ -1,4 +1,5 @@
 import axios from "axios";
+import logger from "../utils/logger";
 
 const createProcess = (
   videoUrl: string
@@ -64,23 +65,23 @@ const checkStatus = (
   });
 
 export const getMp3LinkOfYoutubeVideo = async (videoUrl: string) => {
-  console.log("Creating Process for Youtube to Mp3");
+  logger.info("Creating Process for Youtube to Mp3");
   const createdProcess = await createProcess(videoUrl);
   console.log(createdProcess);
-  console.log("Process Created");
+  logger.info("Process Created");
   if (createdProcess.YoutubeAPI.urlMp3) {
-    console.log("Video has already been processed. Returning Url");
+    logger.info("MP3 for provided video has already been processed. Returning Url");
     return createdProcess.YoutubeAPI.urlMp3;
   }
   let url: string | boolean | undefined = false;
   do {
-    console.log("Waiting couple of seconds for status check");
+    logger.info("Waiting couple of seconds for status check");
     await new Promise((res, rej) => setTimeout(() => res(""), 5000));
-    console.log("Checking Status for the video");
+    logger.info("Checking Status for the MP3 url");
     const processStatus = await checkStatus(createdProcess.guid);
     console.log(processStatus);
     url = processStatus.file;
   } while (!url);
-  console.log("Video has been processed, returning Url");
+  logger.info("MP3 for provided video has been processed, returning Url");
   return url;
 };

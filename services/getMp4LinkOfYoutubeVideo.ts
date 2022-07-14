@@ -1,8 +1,9 @@
 import axios from "axios";
+import logger from "../utils/logger";
 
 export const getMP4LinkOfYoutubeVideo = (videoId: string): Promise<string> =>
   new Promise((res, rej) => {
-    console.log("Getting mp4 url for the video");
+    logger.info(`Getting MP4 Url for Video : ${videoId}`);
     const options = {
       method: "GET",
       url: "https://ytstream-download-youtube-videos.p.rapidapi.com/dl",
@@ -23,7 +24,7 @@ export const getMP4LinkOfYoutubeVideo = (videoId: string): Promise<string> =>
           if (!adaptive480p) {
             rej("Cant find 720 video/mp4 link");
           }
-          console.log(adaptive480p);
+          logger.debug(adaptive480p);
           res(adaptive480p);
         } else {
           rej(data);
