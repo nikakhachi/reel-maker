@@ -11,7 +11,7 @@ const ENV_VARIABLES = [
   "AWS_SECRET_ACCESS_KEY_ID",
   "AWS_REGION",
   "AWS_S3_BUCKET_NAME",
-  "AWS_S3_BUCKET_URL",
+  "AWS_CLOUDFRONT_URL",
 ];
 const NODE_ENV_OPTIONS = ["development", "production", "testing"];
 

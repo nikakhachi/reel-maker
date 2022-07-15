@@ -71,14 +71,14 @@ router.get("/:youtubeVideoId", async (req, res) => {
   if (!youtubeVideo) return new NotFoundException(res);
   if (youtubeVideo.statusId === 2) return new SuccessResponse(res, "Processing");
   if (youtubeVideo.statusId === 3) return new SuccessResponse(res, "Error while Processing");
-  const s3BucketUrl = process.env.AWS_S3_BUCKET_URL;
+  const cloudfrontUrl = process.env.AWS_CLOUDFRONT_URL;
   return new SuccessResponse(
     res,
     youtubeVideo.processedVideos.map((item) => ({
       ...item,
-      metadataUrl: `${s3BucketUrl}/${item.metadataUrl}`,
-      subtitlesUrl: `${s3BucketUrl}/${item.subtitlesUrl}`,
-      videoUrl: `${s3BucketUrl}/${item.videoUrl}`,
+      metadataUrl: `${cloudfrontUrl}/${item.metadataUrl}`,
+      subtitlesUrl: `${cloudfrontUrl}/${item.subtitlesUrl}`,
+      videoUrl: `${cloudfrontUrl}/${item.videoUrl}`,
     }))
   );
 });
