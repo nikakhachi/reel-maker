@@ -1,21 +1,26 @@
-name: Production Workflow
+name: Deploy to ECR
+
 on:
   push:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   build:
+    name: Build Image
     runs-on: ubuntu-latest
+
     steps:
-      - name: Configure AWS Credentions
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Log in to Amazon ECR
+      - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -23,9 +28,6 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: echo "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" && docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" && docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
-      - name: Log out of Amazon ECR
-        if: always()
-        run: docker logout ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
