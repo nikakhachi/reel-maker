@@ -24,17 +24,22 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
 
     const videoFolder = `${NODEJS_ROOT_FOLDER}/${FILE_PROCESSING_FOLDER}/${generatedVideoId}`;
     const fullMp4Path = `${videoFolder}/${generatedVideoId}.mp4`;
-    const fullMp3Path = `${videoFolder}/${generatedVideoId}.mp3`;
 
-    logger.info(`Downloading Mp3 and Mp4..`);
-    await Promise.all([downloadAndSaveFile(mp4Url, fullMp4Path), downloadAndSaveFile(mp3Url, fullMp3Path)]);
+    logger.info(`Downloading Mp4..`);
+    await downloadAndSaveFile(mp4Url, fullMp4Path);
 
     logger.info("Getting Nlp Results..");
     const nlp = await getAudioTranscriptResults(audioTranscriptId);
     fs.writeFile(`${videoFolder}/${generatedVideoId}_NLP.ts`, JSON.stringify(nlp, null, 2), (err) => {});
 
     logger.info(`Generating Clips..`);
-    const processedVideos = await generateClipsAndItsData(nlp, videoFolder, fullMp4Path, generatedVideoId);
+    const processedVideos = await generateClipsAndItsData({
+      nlpData: nlp,
+      videoFolder,
+      originalVideoPath: fullMp4Path,
+      videoId: generatedVideoId,
+      videoUrl: mp4Url,
+    });
 
     fs.rmdirSync(videoFolder, { recursive: true });
 
