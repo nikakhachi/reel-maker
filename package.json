@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --watchAll",
     "build": "tsc",
+    "start": "node build/server.js",
     "dev": "nodemon server.ts",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
