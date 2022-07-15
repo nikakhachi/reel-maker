@@ -6,5 +6,5 @@ RUN npm ci
 COPY . /app/
 RUN npm run build
 COPY . /app/
-EXPOSE 5000
+EXPOSE 8080
 CMD ["node", "./build/server.js"]
