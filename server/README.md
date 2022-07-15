@@ -1,1 +1,0 @@
-# TypeScript Express Starting Template
