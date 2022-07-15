@@ -15,7 +15,7 @@ jobs:
       - name: check out the repository
         uses: actions/checkout@v3
         with:
-          ref: develop
+          ref: master
 
       - name: build a docker image
         run: docker build -t server:latest .
