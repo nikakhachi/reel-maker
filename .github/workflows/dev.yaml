@@ -23,16 +23,16 @@ jobs:
       - name: push the image to DockerHub
         run: echo $DOCKERHUB_PASSWORD | docker login --username $(echo $DOCKERHUB_USERNAME) --password-stdin && docker tag server:latest $(echo $REGISTRY_ENDPOINT):latest && docker push $(echo $REGISTRY_ENDPOINT):latest
 
-  deploy:
-    needs: build_and_push
-    runs-on: ubuntu-latest
-    steps:
-      - name: deploy to Digitalocean droplet via SSH key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.CLOUD_HOST }}
-          username: ${{ secrets.CLOUD_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          envs: REGISTRY_ENDPOINT,DOCKERHUB_USERNAME,DOCKERHUB_PASSWORD
-          script: docker rm -f server && echo $DOCKERHUB_PASSWORD | docker login --username $(echo $DOCKERHUB_USERNAME) --password-stdin && docker pull $(echo $REGISTRY_ENDPOINT):latest && docker run -d --name server --network=host -p 5000:5000 --env-file ~/.env $(echo $REGISTRY_ENDPOINT):latest && docker rmi $(docker images -f "dangling=true" -q)
+  # deploy:
+  #   needs: build_and_push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: deploy to Digitalocean droplet via SSH key
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.CLOUD_HOST }}
+  #         username: ${{ secrets.CLOUD_USERNAME }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         passphrase: ${{ secrets.PASSPHRASE }}
+  #         envs: REGISTRY_ENDPOINT,DOCKERHUB_USERNAME,DOCKERHUB_PASSWORD
+  #         script: docker rm -f server && echo $DOCKERHUB_PASSWORD | docker login --username $(echo $DOCKERHUB_USERNAME) --password-stdin && docker pull $(echo $REGISTRY_ENDPOINT):latest && docker run -d --name server --network=host -p 5000:5000 --env-file ~/.env $(echo $REGISTRY_ENDPOINT):latest && docker rmi $(docker images -f "dangling=true" -q)
