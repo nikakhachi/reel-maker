@@ -1,15 +1,38 @@
+import axios from "axios";
 import { Router } from "express";
 import { prisma } from "../../prisma";
 import { queueAudioForTranscripting } from "../../services/assemblyAI.service";
 import { getMp3LinkOfYoutubeVideo } from "../../services/getMp3LinkOfYoutubeVideo";
 import { getMP4LinkOfYoutubeVideo } from "../../services/getMp4LinkOfYoutubeVideo";
-import { processVideo } from "../../services/processVideo.service";
+import { sendVideoDataForProcessing } from "../../services/sendVideoDataForProcessing.service";
 import { BadRequestException, InternalServerErrorException, NotFoundException, SuccessResponse } from "../../utils/httpResponses";
 import logger from "../../utils/logger";
 
 const router = Router();
 
 router.get("/healthcheck", (req, res) => new SuccessResponse(res));
+
+router.post("/video-status", async (req, res) => {
+  const { msg, youtubeVideoIdInDb, data } = req.body;
+  if (!msg || !youtubeVideoIdInDb) return new BadRequestException(res);
+  if (msg === "error") {
+    logger.error(`Error Occured while processing ${youtubeVideoIdInDb}`);
+    await prisma.youtubeVideo.update({ where: { id: youtubeVideoIdInDb }, data: { statusId: 3 } });
+  }
+  if (msg === "success") {
+    await prisma.youtubeVideo.update({
+      where: { id: youtubeVideoIdInDb },
+      data: {
+        statusId: 1,
+        processedVideos: {
+          create: data,
+        },
+      },
+    });
+    logger.info(`${youtubeVideoIdInDb} was processed successfully`);
+  }
+  return new SuccessResponse(res);
+});
 
 router.post("/upload", async (req, res) => {
   const { youtubeVideoUrl } = req.body;
@@ -44,11 +67,20 @@ router.post("/upload", async (req, res) => {
     return new BadRequestException(res);
   }
   const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2 } });
+
+  logger.info(`Sending video data for processing`);
+  sendVideoDataForProcessing({
+    mp3Url: mp3Link,
+    mp4Url: mp4Link,
+    audioTranscriptId,
+    videoId,
+    youtubeVideoIdInDb: youtubeVideoInDb.id,
+  });
+
   new SuccessResponse(res, {
     videoId,
     uuid: youtubeVideoInDb.id,
   });
-  processVideo(videoId, mp3Link, mp4Link, audioTranscriptId, youtubeVideoInDb.id);
 });
 
 router.get("/:youtubeVideoId", async (req, res) => {

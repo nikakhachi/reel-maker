@@ -4,7 +4,6 @@ import path from "path";
 import logger from "../utils/logger";
 import { cutVideo } from "./ffmpeg.service";
 import { uploadToS3 } from "../aws";
-import { ProcessedVideo } from "@prisma/client";
 
 export const generateClipsAndItsData = async (nlpData: any, videoFolder: string, originalVideoPath: string, videoId: string) => {
   fs.mkdirSync(path.resolve(path.join(videoFolder, "clips")));
