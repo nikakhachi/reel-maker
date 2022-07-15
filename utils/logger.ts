@@ -9,12 +9,12 @@ const localFormat = printf(
   ({ timestamp, level, message, stack }: Logform.TransformableInfo) => `${timestamp} ${level}: ${stack || message}`
 );
 
-const environmentFormat = printf(({ level, message, stack, metadata }: Logform.TransformableInfo) => {
+const environmentFormat = printf(({ level, message, stack, metadata, timestamp }: Logform.TransformableInfo) => {
   let metadt = "";
   if (JSON.stringify(metadata) !== "{}") {
     metadt = JSON.stringify(metadata, null, 2);
   }
-  return `[${level.toUpperCase()}] ${stack || message} ${metadt}`;
+  return `${timestamp} [${level.toUpperCase()}] ${stack || message} ${metadt}`;
 });
 
 const ConsoleTransport: transport = new winston.transports.Console({
