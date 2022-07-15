@@ -42,7 +42,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: Reel-Maker-Server-Container
-          image: ${{ steps.build-image.outputs.image }}
+          image: $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
