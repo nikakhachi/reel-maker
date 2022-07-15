@@ -35,7 +35,7 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
 
     fs.mkdirSync(path.resolve(path.join(clipsDirectory, clipId)));
 
-    logger.debug("trimming video");
+    logger.info("trimming video");
     const outputPath = `${clipsDirectory}/${clipId}/video.mp4`;
     await cutVideo(originalVideoPath, outputPath, chapter.start / 1000, chapter.end / 1000 - chapter.start / 1000);
 
@@ -50,7 +50,7 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
       if (err) logger.error(`Error deleting ${outputPath}`);
     });
 
-    logger.debug("uploading to s3");
+    logger.info("uploading to s3");
     const videoS3Path = `${s3Path}/video.mp4`;
     const subtitlesS3Path = `${s3Path}/subtitles.json`;
     const metadataS3Path = `${s3Path}/metadata.json`;
@@ -85,7 +85,7 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
 
       fs.mkdirSync(path.resolve(path.join(shortsDirectory, shortId)));
 
-      logger.debug("trimming video");
+      logger.info("trimming video");
       const outputPath = `${shortsDirectory}/${shortId}/video.mp4`;
       await cutVideo(originalVideoPath, outputPath, iab.timestamp.start / 1000, iab.timestamp.end / 1000 - iab.timestamp.start / 1000);
 
@@ -100,7 +100,7 @@ export const generateClipsAndItsData = async (nlpData: any, videoFolder: string,
         if (err) logger.error(`Error deleting ${outputPath}`);
       });
 
-      logger.debug("uploading to s3");
+      logger.info("uploading to s3");
       const videoS3Path = `${s3Path}/video.mp4`;
       const subtitlesS3Path = `${s3Path}/subtitles.json`;
       const metadataS3Path = `${s3Path}/metadata.json`;
