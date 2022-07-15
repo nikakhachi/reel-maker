@@ -24,7 +24,7 @@ export const getMP4LinkOfYoutubeVideo = (videoId: string): Promise<string> =>
           if (!adaptive480p) {
             rej("Cant find 720 video/mp4 link");
           }
-          logger.debug(adaptive480p);
+          logger.info(adaptive480p);
           res(adaptive480p);
         } else {
           rej(data);
