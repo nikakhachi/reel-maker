@@ -16,7 +16,7 @@ export const sendVideoDataForProcessing = ({
 }) => {
   axios
     .post(
-      `http://localhost:8080/api/v1/process-video`,
+      `${process.env.VIDEO_PROCESSOR_ENDPOINT}/v1/process-video`,
       {
         mp3Url,
         mp4Url,
@@ -24,7 +24,7 @@ export const sendVideoDataForProcessing = ({
         videoId,
         youtubeVideoIdInDb,
       },
-      { headers: { authorization: "admin" } }
+      { headers: { authorization: process.env.VIDEO_PROCESSOR_ACCESS_KEY || "" } }
     )
     .catch((err) => {
       console.log(err);

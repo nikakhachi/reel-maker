@@ -9,6 +9,7 @@ const ENV_VARIABLES = [
   "AWS_REGION",
   "AWS_S3_BUCKET_NAME",
   "ASSEMBLY_API_KEY",
+  "SERVER_ENDPOINT",
 ];
 const NODE_ENV_OPTIONS = ["development", "production", "testing"];
 

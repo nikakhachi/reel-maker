@@ -12,6 +12,8 @@ const ENV_VARIABLES = [
   "AWS_REGION",
   "AWS_S3_BUCKET_NAME",
   "AWS_CLOUDFRONT_URL",
+  "VIDEO_PROCESSOR_ENDPOINT",
+  "VIDEO_PROCESSOR_ACCESS_KEY",
 ];
 const NODE_ENV_OPTIONS = ["development", "production", "testing"];
 
