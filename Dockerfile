@@ -1,7 +1,7 @@
 FROM mhart/alpine-node:16
 RUN mkdir /app
 WORKDIR /app
-RUN apk update && apk add ffmpeg
+# RUN apk update && apk add ffmpeg
 COPY package*.json /app/
 COPY prisma ./prisma/
 RUN npm ci

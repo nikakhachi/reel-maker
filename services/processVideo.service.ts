@@ -23,16 +23,14 @@ export const processVideo = async (
     const videoFolder = `${NODEJS_ROOT_FOLDER}/${FILE_PROCESSING_FOLDER}/${generatedVideoId}`;
     const fullMp4Path = `${videoFolder}/${generatedVideoId}.mp4`;
     const fullMp3Path = `${videoFolder}/${generatedVideoId}.mp3`;
-    const fullOutputPath = `${videoFolder}/${generatedVideoId + "__output"}.mp4`;
     logger.info(`Downloading Mp3 and Mp4..`);
     await Promise.all([downloadAndSaveFile(mp4Url, fullMp4Path), downloadAndSaveFile(mp3Url, fullMp3Path)]);
     logger.info(`Mixing Mp4 and Mp3..`);
-    await executeBash(`ffmpeg -i ${fullMp4Path} -i ${fullMp3Path} -map 0:v -map 1:a -c:v copy -shortest ${fullOutputPath}`);
     logger.info("Getting Nlp Results..");
     const nlp = await getAudioTranscriptResults(audioTranscriptId);
     fs.writeFile(`${videoFolder}/${generatedVideoId}_NLP.ts`, JSON.stringify(nlp, null, 2), (err) => {});
     logger.info(`Generating Clips..`);
-    const processedVideos = await generateClipsAndItsData(nlp, videoFolder, fullOutputPath, generatedVideoId);
+    const processedVideos = await generateClipsAndItsData(nlp, videoFolder, fullMp4Path, generatedVideoId);
     fs.rmdirSync(videoFolder, { recursive: true });
     await prisma.youtubeVideo.update({
       where: { id: youtubeVideoIdInDb },

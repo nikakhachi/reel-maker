@@ -33,6 +33,7 @@ router.post("/upload", async (req, res) => {
     mp3Link = await getMp3LinkOfYoutubeVideo(youtubeVideoUrl);
     if (typeof mp3Link !== "string") return new InternalServerErrorException(res);
   } catch (error) {
+    console.log(error);
     return new BadRequestException(res);
   }
   try {
