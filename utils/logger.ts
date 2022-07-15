@@ -28,7 +28,12 @@ const ConsoleTransport: transport = new winston.transports.Console({
           metadata({ fillExcept: ["message", "level", "timestamp"] }),
           localFormat
         )
-      : combine(errors({ stack: "true" }), metadata({ fillExcept: ["message", "level", "timestamp"] }), environmentFormat),
+      : combine(
+          timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+          errors({ stack: "true" }),
+          metadata({ fillExcept: ["message", "level", "timestamp"] }),
+          environmentFormat
+        ),
 });
 
 const ErrorLogsTransport: transport = new winston.transports.File({
