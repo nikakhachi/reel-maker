@@ -49,7 +49,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         <ul className={styles.navList}>
           {navigation.map((nav) => (
             <li
-              style={window.location.pathname.includes(nav.to) ? { backgroundColor: "rgb(100,0,100)" } : {}}
+              style={window.location.pathname.includes(nav.to) ? { backgroundColor: "rgba(0, 0, 0, 0.123)" } : {}}
               key={nav.title}
               onClick={() => navigate(nav.to)}
               className={styles.navItem}

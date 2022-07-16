@@ -16,7 +16,7 @@ const Dashboard = () => {
           <>
             <div className={styles.header}>
               <IconButton size="large" onClick={() => generatedVideos.refetch()}>
-                <RefreshIcon fontSize="large" />
+                <RefreshIcon fontSize="large" color="primary" />
               </IconButton>
             </div>
             <VideoSection title="Pending" youtubeVideos={generatedVideos.data.filter((item) => item.status === "Processing")} />
