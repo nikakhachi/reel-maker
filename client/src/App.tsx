@@ -7,20 +7,26 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Generate from "./pages/Generate";
+import { AdminRoute } from "./routes/AdminRoute";
+import { SnackbarProvider } from "./context/SnackbarContext";
 
 function App() {
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/generate" element={<Generate />} />
-      </Routes>
-    </div>
+    <SnackbarProvider>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/generate" element={<Generate />} />
+          </Route>
+        </Routes>
+      </div>
+    </SnackbarProvider>
   );
 }
 
