@@ -118,16 +118,33 @@ export const getVideosController = async (req: Request, res: Response) => {
     },
   });
   const cloudfrontUrl = process.env.AWS_CLOUDFRONT_URL;
-  return new SuccessResponse(
-    res,
-    userVideos.map((item) => ({
-      ...item,
-      processedVideos: item.processedVideos.map((processedVideo) => ({
-        ...item,
-        metadataUrl: `${cloudfrontUrl}/${processedVideo.metadataUrl}`,
-        subtitlesUrl: `${cloudfrontUrl}/${processedVideo.subtitlesUrl}`,
-        videoUrl: `${cloudfrontUrl}/${processedVideo.videoUrl}`,
-      })),
-    }))
-  );
+
+  const response: {
+    status: string;
+    youtubeVideoId: string;
+    videos: {
+      type: string;
+      videoUrl: string;
+      metadataUrl: string;
+      subtitlesUrl: string;
+    }[];
+  }[] = [];
+
+  userVideos.forEach((userVideo) => {
+    const status = userVideo.status.name;
+    const youtubeVideoId = userVideo.youtubeVideoId || "";
+    const videos = userVideo.processedVideos.map((item) => ({
+      type: item.videoType.name,
+      videoUrl: `${cloudfrontUrl}/${item.videoUrl}`,
+      metadataUrl: `${cloudfrontUrl}/${item.metadataUrl}`,
+      subtitlesUrl: `${cloudfrontUrl}/${item.subtitlesUrl}`,
+    }));
+    response.push({
+      status,
+      youtubeVideoId,
+      videos,
+    });
+  });
+
+  return new SuccessResponse(res, response);
 };
