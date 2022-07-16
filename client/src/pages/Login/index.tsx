@@ -51,7 +51,7 @@ const Login = () => {
           </div>
         </div>
         <p className={styles.orContinue}>Or continue with</p>
-        <p className={styles.inputLabel}>Email Address</p>
+        <p className={styles.inputLabel}>Username</p>
         <div className={styles.inputDiv}>
           <TextField
             disabled={isLoading}
