@@ -1,8 +1,10 @@
-import { Button, CircularProgress, Grid, TextField, Typography } from "@mui/material";
+import { Button, Checkbox, CircularProgress, Grid, TextField, Typography } from "@mui/material";
+import GoogleIcon from "@mui/icons-material/Google";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
+import styles from "./styles.module.css";
 
 const Login = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -27,48 +29,70 @@ const Login = () => {
   };
 
   return (
-    <Grid container xs={12} justifyContent="center" marginTop={20} gap={5}>
-      <Grid item xs={7}>
-        <Typography variant="h2">Login</Typography>
-      </Grid>
-      <Grid item xs={7}>
-        <TextField value={username} onChange={(e) => setUsername(e.target.value)} fullWidth label="Username" variant="outlined" />
-      </Grid>
-      <Grid item xs={7}>
-        <TextField
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          fullWidth
-          label="Password"
-          variant="outlined"
-        />
-      </Grid>
-      <Grid item xs={7}>
-        {isLoading ? (
-          <CircularProgress />
-        ) : (
-          <Button onClick={handleLogin} variant="contained">
-            Login
+    <div className={styles.container}>
+      <div className={styles.imageDiv}>
+        <img src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" />
+      </div>
+      <div className={styles.formContainer}>
+        <div className={styles.logoDiv}>
+          <img src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" />
+        </div>
+        <p className={styles.title}>Sign in to your account</p>
+        <p className={styles.titleSecondary}>
+          Or{" "}
+          <a className={styles.freeTrialLink} href="#">
+            start your 14-day free trial
+          </a>
+        </p>
+        <p className={styles.inputLabel}>Sign in with</p>
+        <div className={styles.socialContainer}>
+          <div className={styles.socialItem}>
+            <GoogleIcon />
+          </div>
+        </div>
+        <p className={styles.orContinue}>Or continue with</p>
+        <p className={styles.inputLabel}>Email Address</p>
+        <div className={styles.inputDiv}>
+          <TextField
+            disabled={isLoading}
+            size="small"
+            fullWidth
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            variant="outlined"
+          />
+        </div>
+        <p className={styles.inputLabel}>Password</p>
+        <div className={styles.inputDiv}>
+          <TextField
+            disabled={isLoading}
+            size="small"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            variant="outlined"
+          />
+        </div>
+        <div className={styles.optionsDiv}>
+          <div>
+            <Checkbox disabled={isLoading} size="small" defaultChecked />
+            <p>Remember Me</p>
+          </div>
+          <Link className={styles.forgotPassword} to="/forgot-password">
+            Forgot your password?
+          </Link>
+        </div>
+        <div className={styles.buttonDiv}>
+          <Button disabled={isLoading} fullWidth onClick={handleLogin} variant="contained">
+            {isLoading ? <CircularProgress color="inherit" size="1.6rem" /> : "Sign in"}
           </Button>
-        )}
-      </Grid>
-      <Grid item xs={7}>
-        <Link to="/">Landing Page</Link>
-      </Grid>
-      <Grid item xs={7}>
-        <Link to="/dashboard">My Dashboard</Link>
-      </Grid>
-      <Grid item xs={7}>
-        <Link to="/register">Register</Link>
-      </Grid>
-      <Grid item xs={7}>
-        <Link to="/forgot-password">Forgot Password</Link>
-      </Grid>
-      <Grid item xs={7}>
-        <Link to="/reset-password">Reset Password</Link>
-      </Grid>
-    </Grid>
+          <Button disabled={isLoading} fullWidth onClick={() => navigate("/register")} variant="contained">
+            Register
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
