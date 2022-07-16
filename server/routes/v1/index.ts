@@ -37,7 +37,8 @@ router.post("/video-status", async (req, res) => {
 router.post("/upload", async (req, res) => {
   const { youtubeVideoUrl } = req.body;
   if (!youtubeVideoUrl) return new BadRequestException(res, "Youtube Video Url is not Provided");
-  const videoId = youtubeVideoUrl.split("?v=")[1].split("&")[0];
+  const videoId = youtubeVideoUrl.split("?v=")[1]?.split("&")[0];
+  if (!videoId) return new BadRequestException(res, "Invalid Url");
   let mp3Link: undefined | string;
   let mp4Link: undefined | string;
   let audioTranscriptId: undefined | string;
