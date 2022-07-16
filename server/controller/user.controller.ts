@@ -9,6 +9,9 @@ import { BadRequestException, InternalServerErrorException, NotFoundException, S
 import logger from "../utils/logger";
 
 export const startVideoProcessingController = async (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const user = req.user as User;
   const { youtubeVideoUrl } = req.body;
   if (!youtubeVideoUrl) return new BadRequestException(res, "Youtube Video Url is not Provided");
   const videoId = youtubeVideoUrl.split("?v=")[1]?.split("&")[0];
@@ -41,7 +44,7 @@ export const startVideoProcessingController = async (req: Request, res: Response
     logger.error("Error Queuing up the Audio for Transcript");
     return new BadRequestException(res);
   }
-  const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2, userId: 2 } });
+  const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2, userId: user.id } });
 
   logger.info(`Sending video data for processing`);
   sendVideoDataForProcessing({

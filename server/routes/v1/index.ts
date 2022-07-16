@@ -10,6 +10,6 @@ router.get("/healthcheck", (req, res) => new SuccessResponse(res));
 
 router.use("/auth", AuthRoutes);
 router.use("/user", UserRoutes);
-router.use("/videos", VideoRoutes);
+router.use("/video", VideoRoutes);
 
 export default router;
