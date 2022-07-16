@@ -10,6 +10,7 @@ import { AdminRoute } from "./routes/AdminRoute";
 import { SnackbarProvider } from "./context/SnackbarContext";
 import { UserProvider } from "./context/UserContext";
 import YoutubeVideo from "./pages/YoutubeVideo";
+import MyAccount from "./pages/MyAccount";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/dashboard/youtube-videos/:videoId" element={<YoutubeVideo />} />
             <Route path="/dashboard/youtube-videos" element={<Dashboard />} />
             <Route path="/dashboard/generate" element={<Generate />} />
+            <Route path="/dashboard/my-account" element={<MyAccount />} />
           </Route>
         </Routes>
       </SnackbarProvider>

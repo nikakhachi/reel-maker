@@ -21,11 +21,11 @@ const navigation = [
     title: "Generate",
     to: "/dashboard/generate",
   },
-  // {
-  //   icon: <AccountCircleIcon fontSize="large" />,
-  //   title: "Account",
-  //   to: "/dashboard/youtube-videos",
-  // },
+  {
+    icon: <AccountCircleIcon fontSize="large" />,
+    title: "Account",
+    to: "/dashboard/my-account",
+  },
 ];
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
@@ -94,6 +94,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                 "aria-labelledby": "basic-button",
               }}
             >
+              <MenuItem onClick={() => navigate("/dashboard/my-account")}>My Account</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
