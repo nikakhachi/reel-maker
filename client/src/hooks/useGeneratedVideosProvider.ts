@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 
+export type YoutubeVideoType = {
+  status: "Success" | "Processing" | "Error";
+  youtubeVideoId: string;
+  videos: {
+    type: "Clip" | "Short";
+    metadataUrl: string;
+    subtitlesUrl: string;
+    videoUrl: string;
+  }[];
+};
+
 export const useGeneratedProvider = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<YoutubeVideoType[]>();
   const [error, setError] = useState<any>();
 
   const fetch = async () => {

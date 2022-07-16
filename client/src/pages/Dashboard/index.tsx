@@ -1,61 +1,78 @@
-import { Button, CircularProgress, Grid, TextField, Typography } from "@mui/material";
+import { Button, Card, CardActions, CardContent, CardMedia, CircularProgress, Grid, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
-import { useGeneratedProvider } from "../../hooks/useGeneratedVideosProvider";
+import { useGeneratedProvider, YoutubeVideoType } from "../../hooks/useGeneratedVideosProvider";
+import styles from "./styles.module.css";
 
 const Dashboard = () => {
-  const snackbarContext = useContext(SnackbarContext);
   const generatedVideos = useGeneratedProvider();
 
-  const [youtubeVideoUrl, setYoutubeVideoUrl] = useState("");
-  const [isVideoProcessingLoading, setIsVideoProcessingLoading] = useState(false);
-
-  const handleProcessVideo = async () => {
-    setIsVideoProcessingLoading(true);
-    try {
-      await api.post(`/v1/user/generate-video`, { youtubeVideoUrl });
-      generatedVideos.refetch();
-    } catch (e: any) {
-      snackbarContext?.openSnackbar(e?.response?.data?.message || "Error", "error");
-    } finally {
-      setIsVideoProcessingLoading(false);
-    }
-  };
+  const [selectedYoutubeVideo, setSelectedYoutubeVideo] = useState<null | YoutubeVideoType>(null);
 
   return (
-    <Grid container xs={12} justifyContent="center" marginTop={20} gap={5}>
+    <div style={{ padding: "1rem" }}>
       <Grid item xs={7}>
-        <Typography variant="h2">Dashboard</Typography>
-      </Grid>
-      <Grid item xs={7}>
-        <Typography variant="h5">Generate Video</Typography>
-      </Grid>
-      <Grid item xs={7}>
-        <TextField
-          value={youtubeVideoUrl}
-          onChange={(e) => setYoutubeVideoUrl(e.target.value)}
-          fullWidth
-          label="Youtube Video Link"
-          variant="outlined"
-        />
-      </Grid>
-      <Grid item xs={7}>
-        {isVideoProcessingLoading ? (
-          <CircularProgress size="1.5rem" />
+        {generatedVideos.loading || !generatedVideos.data ? (
+          <CircularProgress />
         ) : (
-          <Button onClick={handleProcessVideo} variant="contained">
-            Process
-          </Button>
+          <div className={styles.videoCardContainer}>
+            {!selectedYoutubeVideo ? (
+              <>
+                {generatedVideos.data.map((youtubeVideo) => (
+                  <Card sx={{ maxWidth: 345 }}>
+                    <CardMedia
+                      component="iframe"
+                      src={`https://www.youtube.com/embed/${youtubeVideo.youtubeVideoId}`}
+                      allow="autoPlay"
+                      height="140"
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {youtubeVideo.youtubeVideoId}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {youtubeVideo.videos.length} Videos
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small" onClick={() => setSelectedYoutubeVideo(youtubeVideo)}>
+                        See All Videos
+                      </Button>
+                      <Button size="small">Download All</Button>
+                    </CardActions>
+                  </Card>
+                ))}
+              </>
+            ) : (
+              <>
+                {selectedYoutubeVideo.videos.map((generatedVideo) => (
+                  <Card sx={{ maxWidth: 345 }}>
+                    {/* <CardMedia
+                  component="iframe"
+                  src={`https://www.youtube.com/embed/${youtubeVideo.youtubeVideoId}`}
+                  allow="autoPlay"
+                  height="140"
+                /> */}
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {generatedVideo.type}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {generatedVideo.type}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small">Download All</Button>
+                    </CardActions>
+                  </Card>
+                ))}
+              </>
+            )}
+          </div>
         )}
       </Grid>
-      <Grid item xs={7}>
-        <Typography variant="h5">Videos</Typography>
-      </Grid>
-      <Grid item xs={7}>
-        {generatedVideos.loading ? <CircularProgress /> : <p>{JSON.stringify(generatedVideos.data)}</p>}
-      </Grid>
-    </Grid>
+    </div>
   );
 };
 

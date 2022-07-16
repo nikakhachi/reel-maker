@@ -1,4 +1,3 @@
-import "./App.css";
 import Landing from "./pages/Landing";
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
@@ -9,11 +8,12 @@ import Dashboard from "./pages/Dashboard";
 import Generate from "./pages/Generate";
 import { AdminRoute } from "./routes/AdminRoute";
 import { SnackbarProvider } from "./context/SnackbarContext";
+import { UserProvider } from "./context/UserContext";
 
 function App() {
   return (
-    <SnackbarProvider>
-      <div className="App">
+    <UserProvider>
+      <SnackbarProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
@@ -25,8 +25,8 @@ function App() {
             <Route path="/generate" element={<Generate />} />
           </Route>
         </Routes>
-      </div>
-    </SnackbarProvider>
+      </SnackbarProvider>
+    </UserProvider>
   );
 }
 
