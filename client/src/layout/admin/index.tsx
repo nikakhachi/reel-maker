@@ -6,7 +6,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SlowMotionVideoIcon from "@mui/icons-material/SlowMotionVideo";
-import { IconButton, Menu, MenuItem, TextField } from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const navigation = [
@@ -31,6 +31,15 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.sideBar}>
@@ -53,15 +62,34 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
       </div>
       <div className={styles.container2}>
         <div className={styles.appBar}>
-          <TextField fullWidth variant="filled" />
+          <p className={styles.title}>Your YouTube Videos</p>
           <div className={styles.appBarUser}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <p className={styles.username}>{userContext?.user?.username}</p>
               <PersonOutlineIcon fontSize="large" />
             </div>
-            <IconButton>
+            <IconButton
+              id="basic-button"
+              aria-controls={open ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              onClick={handleClick}
+            >
               <SettingsIcon />
             </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={handleClose}>Logout</MenuItem>
+            </Menu>
           </div>
         </div>
         {children}
