@@ -15,6 +15,10 @@ export const startVideoProcessingController = async (req: Request, res: Response
   const { youtubeVideoUrl } = req.body;
   if (!youtubeVideoUrl) return new BadRequestException(res, "Youtube Video Url is not Provided");
   const videoId = youtubeVideoUrl.split("?v=")[1]?.split("&")[0];
+  const existingYoutubeVideoInDb = await prisma.youtubeVideo.findFirst({
+    where: { videoId, userId: user.id },
+  });
+  if (existingYoutubeVideoInDb) return new BadRequestException(res, "Video has been already Generated");
   if (!videoId) return new BadRequestException(res, "Invalid Url");
   let mp3Link: undefined | string;
   let mp4Link: undefined | string;
