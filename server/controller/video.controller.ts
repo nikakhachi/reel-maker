@@ -13,13 +13,7 @@ export const videoStatusUpdateController = async (req: Request, res: Response) =
   if (msg === "success") {
     await prisma.youtubeVideo.update({
       where: { id: youtubeVideoIdInDb },
-      data: {
-        youtubeVideoId: videoId,
-        statusId: 1,
-        processedVideos: {
-          create: data,
-        },
-      },
+      data: { statusId: 1, clips: { create: data.clips }, shorts: { create: data.shorts } },
     });
     logger.info(`${youtubeVideoIdInDb} was processed successfully`);
   }

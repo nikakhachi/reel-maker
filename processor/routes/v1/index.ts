@@ -13,7 +13,7 @@ router.post("/process-video", authenticationGuard, (req, res) => {
     mp3Url: string;
     mp4Url: string;
     audioTranscriptId: string;
-    youtubeVideoIdInDb: string;
+    youtubeVideoIdInDb: number;
   };
 
   if (!videoId || !mp3Url || !mp4Url || !audioTranscriptId || !youtubeVideoIdInDb) return new BadRequestException(res);

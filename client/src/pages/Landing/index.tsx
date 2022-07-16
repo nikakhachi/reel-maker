@@ -9,13 +9,13 @@ const Landing = () => {
         <Typography variant="h2">Landing Page</Typography>
       </Grid>
       <Grid item xs={7}>
-        <Link to="login">Login</Link>
+        <Link to="/login">Login</Link>
       </Grid>
       <Grid item xs={7}>
-        <Link to="register">Register</Link>
+        <Link to="/register">Register</Link>
       </Grid>
       <Grid item xs={7}>
-        <Link to="dashboard">My Dashboard</Link>
+        <Link to="/dashboard/youtube-videos">My Dashboard</Link>
       </Grid>
     </Grid>
   );

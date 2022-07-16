@@ -13,17 +13,17 @@ const navigation = [
   {
     icon: <HomeIcon fontSize="large" />,
     title: "Home",
-    to: "/dashboard",
+    to: "/dashboard/youtube-videos",
   },
   {
     icon: <SlowMotionVideoIcon fontSize="large" />,
     title: "Generate",
-    to: "/generate",
+    to: "/dashboard/generate",
   },
   {
     icon: <AccountCircleIcon fontSize="large" />,
     title: "Account",
-    to: "/dashboard",
+    to: "/dashboard/youtube-videos",
   },
 ];
 
@@ -39,7 +39,12 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         </div>
         <ul className={styles.navList}>
           {navigation.map((nav) => (
-            <li onClick={() => navigate(nav.to)} className={styles.navItem}>
+            <li
+              style={window.location.pathname.includes(nav.to) ? { backgroundColor: "rgb(100,0,100)" } : {}}
+              key={nav.title}
+              onClick={() => navigate(nav.to)}
+              className={styles.navItem}
+            >
               {nav.icon}
               <p>{nav.title}</p>
             </li>

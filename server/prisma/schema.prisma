@@ -11,7 +11,9 @@ datasource db {
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
+  id              Int                @id @default(autoincrement())
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt 
   username        String
   email           String
   password        String
@@ -19,34 +21,42 @@ model User {
 }
 
 model YoutubeVideo {
-  id                String            @id @default(uuid())
-  youtubeVideoId    String?
+  id                Int               @id @default(autoincrement())
+  createdAt         DateTime          @default(now())
+  videoId           String
   userId            Int
   user              User              @relation(fields: [userId], references: [id])
   statusId          Int
   status            Status            @relation(fields: [statusId], references: [id])
-  processedVideos   ProcessedVideo[]
+  clips             Clip[]
+  shorts            Short[]
 }
 
 model Status {
-  id              Int           @id @default(autoincrement())
+  id              Int                 @id @default(autoincrement())
   name            String
   youtubeVideos   YoutubeVideo[]
 }
 
-model ProcessedVideo {
+model Clip {
   id                        Int                     @id @default(autoincrement())
+  createdAt                 DateTime                @default(now())
   videoUrl                  String
   subtitlesUrl              String
-  metadataUrl               String
-  videoTypeId               Int
-  videoType                 ProcessedVideoType      @relation(fields: [videoTypeId], references: [id])
-  youtubeVideoDatabaseId    String
+  gist                      String
+  headline                  String
+  summary                   String
+  youtubeVideoDatabaseId    Int
   youtubeVideo              YoutubeVideo            @relation(fields: [youtubeVideoDatabaseId], references: [id])
 }
 
-model ProcessedVideoType {
-  id              Int               @id @default(autoincrement())
-  name            String
-  youtubeVideos   ProcessedVideo[]
+model Short {
+  id                        Int                     @id @default(autoincrement())
+  createdAt                 DateTime                 @default(now())
+  videoUrl                  String
+  subtitlesUrl              String
+  text                      String
+  label                     String
+  youtubeVideoDatabaseId    Int
+  youtubeVideo              YoutubeVideo            @relation(fields: [youtubeVideoDatabaseId], references: [id])
 }

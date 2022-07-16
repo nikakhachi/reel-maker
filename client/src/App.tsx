@@ -21,8 +21,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<AdminRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/generate" element={<Generate />} />
+            <Route path="/dashboard/youtube-videos" element={<Dashboard />} />
+            <Route path="/dashboard/generate" element={<Generate />} />
           </Route>
         </Routes>
       </SnackbarProvider>

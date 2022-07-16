@@ -12,7 +12,7 @@ export const sendVideoDataForProcessing = ({
   mp3Url: string;
   mp4Url: string;
   audioTranscriptId: string;
-  youtubeVideoIdInDb: string;
+  youtubeVideoIdInDb: number;
 }) => {
   axios
     .post(

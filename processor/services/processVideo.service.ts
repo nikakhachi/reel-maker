@@ -13,7 +13,7 @@ interface IArguments {
   mp3Url: string;
   mp4Url: string;
   audioTranscriptId: string;
-  youtubeVideoIdInDb: string;
+  youtubeVideoIdInDb: number;
 }
 
 export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId, youtubeVideoIdInDb }: IArguments) => {

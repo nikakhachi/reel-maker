@@ -44,7 +44,7 @@ export const startVideoProcessingController = async (req: Request, res: Response
     logger.error("Error Queuing up the Audio for Transcript");
     return new BadRequestException(res);
   }
-  const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2, userId: user.id } });
+  const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2, userId: user.id, videoId } });
 
   logger.info(`Sending video data for processing`);
   sendVideoDataForProcessing({
@@ -61,38 +61,6 @@ export const startVideoProcessingController = async (req: Request, res: Response
   });
 };
 
-export const getVideoDataByIdController = async (req: Request, res: Response) => {
-  const { youtubeVideoId } = req.params;
-  const youtubeVideo = await prisma.youtubeVideo.findFirst({
-    where: { id: youtubeVideoId },
-    include: {
-      processedVideos: {
-        select: {
-          metadataUrl: true,
-          subtitlesUrl: true,
-          videoUrl: true,
-          videoType: {
-            select: { name: true },
-          },
-        },
-      },
-    },
-  });
-  if (!youtubeVideo) return new NotFoundException(res);
-  if (youtubeVideo.statusId === 2) return new SuccessResponse(res, "Processing");
-  if (youtubeVideo.statusId === 3) return new SuccessResponse(res, "Error while Processing");
-  const cloudfrontUrl = process.env.AWS_CLOUDFRONT_URL;
-  return new SuccessResponse(
-    res,
-    youtubeVideo.processedVideos.map((item) => ({
-      ...item,
-      metadataUrl: `${cloudfrontUrl}/${item.metadataUrl}`,
-      subtitlesUrl: `${cloudfrontUrl}/${item.subtitlesUrl}`,
-      videoUrl: `${cloudfrontUrl}/${item.videoUrl}`,
-    }))
-  );
-};
-
 export const getVideosController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -101,48 +69,49 @@ export const getVideosController = async (req: Request, res: Response) => {
     where: { userId: user.id },
     select: {
       id: true,
-      youtubeVideoId: true,
+      videoId: true,
       status: { select: { name: true } },
-      processedVideos: {
+      clips: {
         select: {
-          metadataUrl: true,
+          createdAt: true,
+          gist: true,
+          headline: true,
           subtitlesUrl: true,
+          summary: true,
           videoUrl: true,
-          videoType: {
-            select: {
-              name: true,
-            },
-          },
+        },
+      },
+      shorts: {
+        select: {
+          createdAt: true,
+          label: true,
+          subtitlesUrl: true,
+          text: true,
+          videoUrl: true,
         },
       },
     },
   });
   const cloudfrontUrl = process.env.AWS_CLOUDFRONT_URL;
 
-  const response: {
-    status: string;
-    youtubeVideoId: string;
-    videos: {
-      type: string;
-      videoUrl: string;
-      metadataUrl: string;
-      subtitlesUrl: string;
-    }[];
-  }[] = [];
+  const response: any[] = [];
 
   userVideos.forEach((userVideo) => {
     const status = userVideo.status.name;
-    const youtubeVideoId = userVideo.youtubeVideoId || "";
-    const videos = userVideo.processedVideos.map((item) => ({
-      type: item.videoType.name,
-      videoUrl: `${cloudfrontUrl}/${item.videoUrl}`,
-      metadataUrl: `${cloudfrontUrl}/${item.metadataUrl}`,
-      subtitlesUrl: `${cloudfrontUrl}/${item.subtitlesUrl}`,
-    }));
+    const videoId = userVideo.videoId;
     response.push({
       status,
-      youtubeVideoId,
-      videos,
+      videoId,
+      clips: userVideo.clips.map((clip) => ({
+        ...clip,
+        videoUrl: `${cloudfrontUrl}/${clip.videoUrl}`,
+        subtitlesUrl: `${cloudfrontUrl}/${clip.subtitlesUrl}`,
+      })),
+      shorts: userVideo.shorts.map((short) => ({
+        ...short,
+        videoUrl: `${cloudfrontUrl}/${short.videoUrl}`,
+        subtitlesUrl: `${cloudfrontUrl}/${short.subtitlesUrl}`,
+      })),
     });
   });
 

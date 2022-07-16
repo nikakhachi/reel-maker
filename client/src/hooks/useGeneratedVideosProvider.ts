@@ -3,12 +3,21 @@ import { api } from "../api";
 
 export type YoutubeVideoType = {
   status: "Success" | "Processing" | "Error";
-  youtubeVideoId: string;
-  videos: {
-    type: "Clip" | "Short";
-    metadataUrl: string;
+  videoId: string;
+  shorts: {
     subtitlesUrl: string;
     videoUrl: string;
+    createdAt: Date;
+    label: string;
+    text: string;
+  }[];
+  clips: {
+    subtitlesUrl: string;
+    videoUrl: string;
+    createdAt: Date;
+    gist: string;
+    headline: string;
+    summary: string;
   }[];
 };
 

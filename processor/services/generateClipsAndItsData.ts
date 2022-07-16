@@ -24,11 +24,20 @@ export const generateClipsAndItsData = async ({ nlpData, originalVideoPath, vide
   const shortsDirectory = `${videoFolder}/shorts/`;
 
   const processedVideos: {
-    videoUrl: string;
-    subtitlesUrl: string;
-    metadataUrl: string;
-    videoTypeId: number;
-  }[] = [];
+    clips: {
+      gist: string;
+      headline: string;
+      summary: string;
+      videoUrl: string;
+      subtitlesUrl: string;
+    }[];
+    shorts: {
+      text: string;
+      label: string;
+      videoUrl: string;
+      subtitlesUrl: string;
+    }[];
+  } = { clips: [], shorts: [] };
 
   for (const chapter of nlpData.chapters) {
     const clipDuration = chapter.end / 1000 - chapter.start / 1000;
@@ -66,17 +75,15 @@ export const generateClipsAndItsData = async ({ nlpData, originalVideoPath, vide
       logger.info("uploading to s3");
       const videoS3Path = `${s3Path}/video.mp4`;
       const subtitlesS3Path = `${s3Path}/subtitles.json`;
-      const metadataS3Path = `${s3Path}/metadata.json`;
-      await Promise.all([
-        uploadToS3(videoS3Path, newVideo),
-        uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8")),
-        uploadToS3(metadataS3Path, Buffer.from(JSON.stringify(chapter), "utf-8")),
-      ]);
-      processedVideos.push({
+
+      await Promise.all([uploadToS3(videoS3Path, newVideo), uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8"))]);
+
+      processedVideos.clips.push({
         videoUrl: videoS3Path,
         subtitlesUrl: subtitlesS3Path,
-        metadataUrl: metadataS3Path,
-        videoTypeId: 1,
+        gist: chapter.gist,
+        summary: chapter.summary,
+        headline: chapter.headline,
       });
 
       logger.info(`Clip ${chapter.gist} has generated`);
@@ -119,17 +126,13 @@ export const generateClipsAndItsData = async ({ nlpData, originalVideoPath, vide
       logger.info("uploading to s3");
       const videoS3Path = `${s3Path}/video.mp4`;
       const subtitlesS3Path = `${s3Path}/subtitles.json`;
-      const metadataS3Path = `${s3Path}/metadata.json`;
-      await Promise.all([
-        uploadToS3(videoS3Path, newVideo),
-        uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8")),
-        uploadToS3(metadataS3Path, Buffer.from(JSON.stringify(iab), "utf-8")),
-      ]);
-      processedVideos.push({
+
+      await Promise.all([uploadToS3(videoS3Path, newVideo), uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8"))]);
+      processedVideos.shorts.push({
         videoUrl: videoS3Path,
         subtitlesUrl: subtitlesS3Path,
-        metadataUrl: metadataS3Path,
-        videoTypeId: 2,
+        text: iab.text,
+        label: iab.labels[0].label,
       });
 
       logger.info(`short ${shortId} has generated`);

@@ -20,7 +20,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       await api.post("/v1/auth/login", { username, password });
-      navigate("/dashboard");
+      navigate("/dashboard/youtube-videos");
     } catch (error: any) {
       snackbarContext?.openSnackbar(error.response.data?.message || "Error", "error");
     } finally {

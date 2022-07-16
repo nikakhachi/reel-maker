@@ -19,16 +19,4 @@ const prisma = new PrismaClient();
       },
     ],
   });
-  await prisma.processedVideoType.createMany({
-    data: [
-      {
-        name: "Clip",
-        id: 1,
-      },
-      {
-        name: "Short",
-        id: 2,
-      },
-    ],
-  });
 })();
