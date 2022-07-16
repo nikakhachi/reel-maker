@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { setAccessTokenCookie, setRefreshTokenCookie } from "../services/cookie.service";
+import { clearCookies, setAccessTokenCookie, setRefreshTokenCookie } from "../services/cookie.service";
 import { signAccessToken, signRefreshToken } from "../services/jwt.service";
 import logger from "../utils/logger";
 import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
@@ -42,4 +42,9 @@ export const registerController = async (req: Request, res: Response) => {
     email: createdUser.email,
     username: createdUser.username,
   });
+};
+
+export const logoutController = async (req: Request, res: Response) => {
+  clearCookies(res);
+  new SuccessResponse(res);
 };

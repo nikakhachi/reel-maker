@@ -8,6 +8,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import SlowMotionVideoIcon from "@mui/icons-material/SlowMotionVideo";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../api";
 
 const navigation = [
   {
@@ -38,6 +39,13 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    await api.post(`/v1/auth/logout`, {});
+    userContext?.setUser(null);
+    handleClose();
+    navigate("/");
   };
 
   return (
@@ -86,9 +94,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                 "aria-labelledby": "basic-button",
               }}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
         </div>

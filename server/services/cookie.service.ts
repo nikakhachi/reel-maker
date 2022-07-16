@@ -16,4 +16,9 @@ const setRefreshTokenCookie = (res: Response, refreshToken: string) => {
   });
 };
 
-export { setAccessTokenCookie, setRefreshTokenCookie };
+const clearCookies = (res: Response) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refresuToken");
+};
+
+export { setAccessTokenCookie, setRefreshTokenCookie, clearCookies };
