@@ -43,7 +43,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
 
     fs.rmdirSync(videoFolder, { recursive: true });
 
-    await axios.post(`${process.env.SERVER_ENDPOINT}/v1/video-status`, {
+    await axios.post(`${process.env.SERVER_ENDPOINT}/v1/video/status-update`, {
       msg: "success",
       youtubeVideoIdInDb,
       data: processedVideos,
@@ -51,7 +51,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
   } catch (error) {
     console.log(error);
     logger.error(`Error while processing video for ${youtubeVideoIdInDb}`);
-    await axios.post(`${process.env.SERVER_ENDPOINT}/v1/video-status`, {
+    await axios.post(`${process.env.SERVER_ENDPOINT}/v1/video/status-update`, {
       msg: "error",
       youtubeVideoIdInDb,
       data: null,
