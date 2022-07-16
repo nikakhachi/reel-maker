@@ -20,11 +20,11 @@ const navigation = [
     title: "Generate",
     to: "/dashboard/generate",
   },
-  {
-    icon: <AccountCircleIcon fontSize="large" />,
-    title: "Account",
-    to: "/dashboard/youtube-videos",
-  },
+  // {
+  //   icon: <AccountCircleIcon fontSize="large" />,
+  //   title: "Account",
+  //   to: "/dashboard/youtube-videos",
+  // },
 ];
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {

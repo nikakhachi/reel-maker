@@ -72,17 +72,43 @@ export const getVideosController = async (req: Request, res: Response) => {
   const userVideos = await prisma.youtubeVideo.findMany({
     where: { userId: user.id },
     select: {
-      id: true,
       videoId: true,
       status: { select: { name: true } },
+      _count: {
+        select: {
+          clips: true,
+          shorts: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return new SuccessResponse(res, userVideos);
+};
+
+export const getVideoController = async (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const user = req.user as User;
+  const { videoId } = req.params;
+  if (typeof videoId !== "string") return new BadRequestException(res);
+  const youtubeVideo = await prisma.youtubeVideo.findFirst({
+    where: { userId: user.id, videoId, statusId: 1 },
+    select: {
       clips: {
         select: {
-          createdAt: true,
           gist: true,
           headline: true,
+          createdAt: true,
           subtitlesUrl: true,
           summary: true,
           videoUrl: true,
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       },
       shorts: {
@@ -93,31 +119,13 @@ export const getVideosController = async (req: Request, res: Response) => {
           text: true,
           videoUrl: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       },
     },
   });
-  const cloudfrontUrl = process.env.AWS_CLOUDFRONT_URL;
+  if (!youtubeVideo) return new BadRequestException(res);
 
-  const response: any[] = [];
-
-  userVideos.forEach((userVideo) => {
-    const status = userVideo.status.name;
-    const videoId = userVideo.videoId;
-    response.push({
-      status,
-      videoId,
-      clips: userVideo.clips.map((clip) => ({
-        ...clip,
-        videoUrl: `${cloudfrontUrl}/${clip.videoUrl}`,
-        subtitlesUrl: `${cloudfrontUrl}/${clip.subtitlesUrl}`,
-      })),
-      shorts: userVideo.shorts.map((short) => ({
-        ...short,
-        videoUrl: `${cloudfrontUrl}/${short.videoUrl}`,
-        subtitlesUrl: `${cloudfrontUrl}/${short.subtitlesUrl}`,
-      })),
-    });
-  });
-
-  return new SuccessResponse(res, response);
+  return new SuccessResponse(res, youtubeVideo);
 };

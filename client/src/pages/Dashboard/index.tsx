@@ -1,30 +1,28 @@
 import { CircularProgress, Grid, IconButton } from "@mui/material";
-import { useGeneratedProvider } from "../../hooks/useGeneratedVideosProvider";
-import VideoSection from "./VideoSection";
+import { useYoutubeVideosProvider } from "../../hooks/useYoutubeVideosProvider";
+import VideoSection from "../../components/VideoSection";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import styles from "./styles.module.css";
 
 const Dashboard = () => {
-  const generatedVideos = useGeneratedProvider();
+  const youtubeVideos = useYoutubeVideosProvider();
 
   return (
     <div style={{ padding: "1rem" }}>
-      <Grid item xs={7}>
-        {generatedVideos.loading || !generatedVideos.data ? (
-          <CircularProgress />
-        ) : (
-          <>
-            <div className={styles.header}>
-              <IconButton size="large" onClick={() => generatedVideos.refetch()}>
-                <RefreshIcon fontSize="large" color="primary" />
-              </IconButton>
-            </div>
-            <VideoSection title="Pending" youtubeVideos={generatedVideos.data.filter((item) => item.status === "Processing")} />
-            <VideoSection title="Failed" youtubeVideos={generatedVideos.data.filter((item) => item.status === "Error")} />
-            <VideoSection title="Generated" youtubeVideos={generatedVideos.data.filter((item) => item.status === "Success")} />
-          </>
-        )}
-      </Grid>
+      {youtubeVideos.loading || !youtubeVideos.data ? (
+        <CircularProgress />
+      ) : (
+        <>
+          <div className={styles.header}>
+            <IconButton size="large" onClick={() => youtubeVideos.refetch()}>
+              <RefreshIcon fontSize="large" color="primary" />
+            </IconButton>
+          </div>
+          <VideoSection title="Pending" youtubeVideos={youtubeVideos.data.filter((item) => item.status.name === "Processing")} />
+          <VideoSection title="Failed" youtubeVideos={youtubeVideos.data.filter((item) => item.status.name === "Error")} />
+          <VideoSection title="Generated" youtubeVideos={youtubeVideos.data.filter((item) => item.status.name === "Success")} />
+        </>
+      )}
     </div>
   );
 };

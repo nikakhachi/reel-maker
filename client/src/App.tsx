@@ -9,6 +9,7 @@ import Generate from "./pages/Generate";
 import { AdminRoute } from "./routes/AdminRoute";
 import { SnackbarProvider } from "./context/SnackbarContext";
 import { UserProvider } from "./context/UserContext";
+import YoutubeVideo from "./pages/YoutubeVideo";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<AdminRoute />}>
+            <Route path="/dashboard/youtube-videos/:videoId" element={<YoutubeVideo />} />
             <Route path="/dashboard/youtube-videos" element={<Dashboard />} />
             <Route path="/dashboard/generate" element={<Generate />} />
           </Route>

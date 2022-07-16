@@ -2,26 +2,12 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 
 export type YoutubeVideoType = {
-  status: "Success" | "Processing" | "Error";
+  status: { name: "Success" | "Processing" | "Error" };
   videoId: string;
-  shorts: {
-    subtitlesUrl: string;
-    videoUrl: string;
-    createdAt: Date;
-    label: string;
-    text: string;
-  }[];
-  clips: {
-    subtitlesUrl: string;
-    videoUrl: string;
-    createdAt: Date;
-    gist: string;
-    headline: string;
-    summary: string;
-  }[];
+  _count: { clips: number; shorts: number };
 };
 
-export const useGeneratedProvider = () => {
+export const useYoutubeVideosProvider = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<YoutubeVideoType[]>();
   const [error, setError] = useState<any>();
