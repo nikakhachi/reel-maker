@@ -4,7 +4,7 @@ import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
 import logger from "../utils/logger";
 
 export const videoStatusUpdateController = async (req: Request, res: Response) => {
-  const { msg, youtubeVideoIdInDb, data } = req.body;
+  const { msg, youtubeVideoIdInDb, data, videoIdWithUuid } = req.body;
   if (!msg || !youtubeVideoIdInDb) return new BadRequestException(res);
   if (msg === "error") {
     logger.error(`Error Occured while processing ${youtubeVideoIdInDb}`);
@@ -14,6 +14,7 @@ export const videoStatusUpdateController = async (req: Request, res: Response) =
     await prisma.youtubeVideo.update({
       where: { id: youtubeVideoIdInDb },
       data: {
+        youtubeVideoId: videoIdWithUuid,
         statusId: 1,
         processedVideos: {
           create: data,
