@@ -1,7 +1,18 @@
 -- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "username" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "YoutubeVideo" (
     "id" TEXT NOT NULL,
     "youtubeVideoId" TEXT,
+    "userId" INTEGER NOT NULL,
     "statusId" INTEGER NOT NULL,
 
     CONSTRAINT "YoutubeVideo_pkey" PRIMARY KEY ("id")
@@ -34,6 +45,9 @@ CREATE TABLE "ProcessedVideoType" (
 
     CONSTRAINT "ProcessedVideoType_pkey" PRIMARY KEY ("id")
 );
+
+-- AddForeignKey
+ALTER TABLE "YoutubeVideo" ADD CONSTRAINT "YoutubeVideo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "YoutubeVideo" ADD CONSTRAINT "YoutubeVideo_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "Status"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

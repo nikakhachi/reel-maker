@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Router } from "express";
 import { prisma } from "../../prisma";
+import AuthRoutes from "./authentication.route";
 import { queueAudioForTranscripting } from "../../services/assemblyAI.service";
 import { getMp3LinkOfYoutubeVideo } from "../../services/getMp3LinkOfYoutubeVideo";
 import { getMP4LinkOfYoutubeVideo } from "../../services/getMp4LinkOfYoutubeVideo";
@@ -11,6 +12,8 @@ import logger from "../../utils/logger";
 const router = Router();
 
 router.get("/healthcheck", (req, res) => new SuccessResponse(res));
+
+router.use("/auth", AuthRoutes);
 
 router.post("/video-status", async (req, res) => {
   const { msg, youtubeVideoIdInDb, data } = req.body;
