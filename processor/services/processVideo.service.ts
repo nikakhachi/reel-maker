@@ -47,6 +47,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
       msg: "success",
       youtubeVideoIdInDb,
       data: processedVideos,
+      videoId,
     });
   } catch (error) {
     console.log(error);
@@ -54,7 +55,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
     await axios.post(`${process.env.SERVER_ENDPOINT}/v1/video/status-update`, {
       msg: "error",
       youtubeVideoIdInDb,
-      videoIdWithUuid: videoId,
+      videoId,
       data: null,
     });
   }
