@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
+import { validateEmail } from "../../utils/validateEmail";
 import styles from "./styles.module.css";
 
 const Register = () => {
@@ -18,6 +19,7 @@ const Register = () => {
 
   const handleRegister = async () => {
     if (!username || !password || !email) return snackbarContext?.openSnackbar("Fields are missing", "error");
+    if (!validateEmail(email)) return snackbarContext?.openSnackbar("Invaild Email", "error");
     if (password !== passwordConfirm) return snackbarContext?.openSnackbar("Passwords Do not match", "error");
     setIsLoading(true);
     try {
@@ -42,6 +44,7 @@ const Register = () => {
         <p className={styles.inputLabel}>Email Address</p>
         <div className={styles.inputDiv}>
           <TextField
+            type="email"
             disabled={isLoading}
             size="small"
             fullWidth
