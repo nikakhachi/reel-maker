@@ -34,7 +34,7 @@ export const registerController = async (req: Request, res: Response) => {
   logger.info("Register Instagram User");
   const { username, email, password } = req.body;
   if (!username || !email || !password) return new BadRequestException(res, "Fields are Missing");
-  const existingUser = await prisma.user.findFirst({ where: { OR: [{ email, username }] } });
+  const existingUser = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existingUser) return new BadRequestException(res, "User Already Exists");
   const hashedPassword = await bcrypt.hash(password, 10);
   const createdUser = await prisma.user.create({ data: { email, password: hashedPassword, username } });
