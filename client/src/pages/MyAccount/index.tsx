@@ -8,6 +8,7 @@ import { validateEmail } from "../../utils/validateEmail";
 import moment from "moment";
 import styles from "./styles.module.css";
 import { useUserProvider } from "../../hooks/useUserProvider";
+import { useSubscriptionsProvider } from "../../hooks/useSubscriptionsProvider";
 
 const MyAccount = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -27,6 +28,7 @@ const MyAccount = () => {
   const isUsernameChanged = username !== user?.username;
 
   const userProvider = useUserProvider();
+  const subscriptionsProvider = useSubscriptionsProvider();
 
   useEffect(() => {
     userContext?.setUser(null);
@@ -156,6 +158,25 @@ const MyAccount = () => {
             </Grid>
           )}
         </Grid>
+        {subscriptionsProvider.loading ? (
+          <CircularProgress />
+        ) : (
+          <Grid container item xs={12} gap={1}>
+            {subscriptionsProvider.data.map((subscription) => (
+              <Grid item className={styles.subscriptionItem} xs={12} sm={12} md={5} xl={3}>
+                <p className={styles.subTitle}>
+                  {subscription.title} {user.subscription.title === subscription.title && "(Current Plan)"}
+                </p>
+                <p className={styles.subDays}>{subscription.durationInDays} Days</p>
+                <p className={styles.subSeconds}>{subscription.transcriptionSeconds} Seconds Video Transcription</p>
+                <p className={styles.subPrice}>{subscription.priceInDollars}$</p>
+                <Button disabled={user.subscription.title === subscription.title} variant="contained">
+                  Upgrade
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Grid>
     </div>
   );

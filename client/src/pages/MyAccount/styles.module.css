@@ -5,3 +5,28 @@
   width: 500px;
   gap: 1rem;
 }
+
+.subscriptionItem {
+  border: 1px solid lightgrey;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.subTitle {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.subDays {
+  font-weight: 200;
+}
+
+.subSeconds {
+  font-weight: 200;
+}
+
+.subPrice {
+  margin: 1rem 0;
+  font-size: 1.5rem;
+}
