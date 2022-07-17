@@ -7,6 +7,8 @@ import { getMP4LinkOfYoutubeVideo } from "../services/getMp4LinkOfYoutubeVideo";
 import { sendVideoDataForProcessing } from "../services/sendVideoDataForProcessing.service";
 import { BadRequestException, InternalServerErrorException, NotFoundException, SuccessResponse } from "../utils/httpResponses";
 import logger from "../utils/logger";
+import * as bcrypt from "bcrypt";
+import { clearCookies } from "../services/cookie.service";
 
 export const startVideoProcessingController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -128,4 +130,22 @@ export const getVideoController = async (req: Request, res: Response) => {
   if (!youtubeVideo) return new BadRequestException(res);
 
   return new SuccessResponse(res, youtubeVideo);
+};
+
+export const updateAccountInfoController = async (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const user = req.user as User;
+  const { username, email, currentPassword, newPassword } = req.body;
+  if (!username || !email || !currentPassword) return new BadRequestException(res, "Fields are Missing");
+  const isPasswordValid = bcrypt.compareSync(currentPassword, user?.password || "");
+  if (!isPasswordValid) return new BadRequestException(res, "Password is Incorrect");
+  const updatedUserData: { username: string; email: string; password: undefined | string } = { username, email, password: undefined };
+  if (newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    updatedUserData.password = hashedPassword;
+    clearCookies(res);
+  }
+  const updatedUser = await prisma.user.update({ where: { id: user.id }, data: updatedUserData, select: { email: true, username: true } });
+  new SuccessResponse(res, updatedUser);
 };
