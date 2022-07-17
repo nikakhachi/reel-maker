@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import { Button, Card, CardActions, CardContent, CardMedia, Tooltip, Typography } from "@mui/material";
 import { useState } from "react";
 import { YoutubeVideoType } from "../../hooks/useYoutubeVideosProvider";
 import { ClipVideoType, ShortVideoType } from "../../hooks/useProcessedVideosProvider";
@@ -6,9 +6,9 @@ import styles from "./styles.module.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useNavigate } from "react-router-dom";
-import ReactPlayer from "react-player";
-import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
-
+import { downloadFromLinks } from "../../utils/downloadFromLinks";
+import InfoIcon from "@mui/icons-material/Info";
+import { api, API_ENDPOINT } from "../../api";
 interface IProps {
   youtubeVideos?: YoutubeVideoType[];
   clipVideos?: ClipVideoType[];
@@ -49,10 +49,20 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                   <CardActions>
                     {title === "Generated" && (
                       <>
-                        <Button onClick={() => navigate(`/dashboard/youtube-videos/${youtubeVideo.videoId}`)} size="small">
+                        <Button
+                          variant="outlined"
+                          onClick={() => navigate(`/dashboard/youtube-videos/${youtubeVideo.videoId}`)}
+                          size="small"
+                        >
                           See All Videos
                         </Button>
-                        <Button size="small">Download All</Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${youtubeVideo.videoId}`])}
+                        >
+                          Download All
+                        </Button>
                       </>
                     )}
                   </CardActions>
@@ -70,22 +80,32 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
           <div className={styles.videoCardContainer}>
             {clipVideos.map((clip) => (
               <div style={isExpanded ? {} : { display: "none" }}>
-                <Card key={clip.videoUrl} sx={{ maxWidth: 345 }}>
-                  {/* <ReactPlayer url={`https://duypt6g4fe8mq.cloudfront.net/${clip.videoUrl}`} /> */}
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
+                <Card key={clip.videoUrl} sx={{ maxWidth: 345, border: "1px solid lightgrey" }}>
+                  <video width="100%" src={`https://duypt6g4fe8mq.cloudfront.net/${clip.videoUrl}`} />
+                  <CardContent sx={{ minHeight: 180 }}>
+                    <Typography gutterBottom variant="h6" component="div">
                       {clip.gist}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {clip.headline}
                     </Typography>
-                    {/* <hr />
-                    <Typography variant="body2" color="text.secondary">
-                      {clip.summary}
-                    </Typography> */}
                   </CardContent>
-                  <CardActions>
-                    <Button size="small">Download</Button>
+                  <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() =>
+                        downloadFromLinks([
+                          `https://duypt6g4fe8mq.cloudfront.net/${clip.videoUrl}`,
+                          `https://duypt6g4fe8mq.cloudfront.net/${clip.subtitlesUrl}`,
+                        ])
+                      }
+                      size="small"
+                    >
+                      Download
+                    </Button>
+                    <Tooltip title={<Typography variant="subtitle2">{clip.summary}</Typography>}>
+                      <InfoIcon color="primary" />
+                    </Tooltip>
                   </CardActions>
                 </Card>
               </div>
@@ -101,18 +121,33 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
           <div className={styles.videoCardContainer}>
             {shortVideos.map((short) => (
               <div style={isExpanded ? {} : { display: "none" }}>
-                <Card key={short.videoUrl} sx={{ maxWidth: 345 }}>
-                  {/* <ReactPlayer url={`https://duypt6g4fe8mq.cloudfront.net/${short.videoUrl}`} /> */}
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {short.label}
+                <Card key={short.videoUrl} sx={{ maxWidth: 345, border: "1px solid lightgrey" }}>
+                  <video width="100%" src={`https://duypt6g4fe8mq.cloudfront.net/${short.videoUrl}`} />
+                  <CardContent sx={{ minHeight: 300 }}>
+                    <Typography gutterBottom variant="h6" component="div">
+                      {short.label
+                        .split(">")
+                        .slice(-1)[0]
+                        .split(/(?=[A-Z])/)
+                        .join(" ")}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {short.text}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small">Download</Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() =>
+                        downloadFromLinks([
+                          `https://duypt6g4fe8mq.cloudfront.net/${short.videoUrl}`,
+                          `https://duypt6g4fe8mq.cloudfront.net/${short.subtitlesUrl}`,
+                        ])
+                      }
+                      size="small"
+                    >
+                      Download
+                    </Button>
                   </CardActions>
                 </Card>
               </div>

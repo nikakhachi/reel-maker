@@ -9,6 +9,7 @@ import { BadRequestException, InternalServerErrorException, NotFoundException, S
 import logger from "../utils/logger";
 import * as bcrypt from "bcrypt";
 import { clearCookies } from "../services/cookie.service";
+import { downloadS3FolderAsZip } from "../aws";
 
 export const startVideoProcessingController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -148,4 +149,14 @@ export const updateAccountInfoController = async (req: Request, res: Response) =
   }
   const updatedUser = await prisma.user.update({ where: { id: user.id }, data: updatedUserData, select: { email: true, username: true } });
   new SuccessResponse(res, updatedUser);
+};
+
+export const downloadZippedVideosController = async (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const user = req.user as User;
+  const { videoId } = req.params;
+  const youtubeVideo = await prisma.youtubeVideo.findFirst({ where: { userId: user.id, videoId } });
+  if (!youtubeVideo) return new BadRequestException(res);
+  downloadS3FolderAsZip(res, `${videoId}/`);
 };
