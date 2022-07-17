@@ -29,7 +29,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
           </p>
           <div className={styles.videoCardContainer}>
             {youtubeVideos.map((youtubeVideo) => (
-              <div style={isExpanded ? {} : { display: "none" }}>
+              <div key={youtubeVideo.videoId} style={isExpanded ? {} : { display: "none" }}>
                 <Card key={youtubeVideo.videoId} sx={{ maxWidth: 345 }}>
                   <CardMedia
                     component="iframe"
@@ -79,7 +79,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
           </p>
           <div className={styles.videoCardContainer}>
             {clipVideos.map((clip) => (
-              <div style={isExpanded ? {} : { display: "none" }}>
+              <div key={clip.videoUrl} style={isExpanded ? {} : { display: "none" }}>
                 <Card key={clip.videoUrl} sx={{ maxWidth: 345, border: "1px solid lightgrey" }}>
                   <video width="100%" src={`https://duypt6g4fe8mq.cloudfront.net/${clip.videoUrl}`} />
                   <CardContent sx={{ minHeight: 180 }}>
@@ -120,7 +120,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
           </p>
           <div className={styles.videoCardContainer}>
             {shortVideos.map((short) => (
-              <div style={isExpanded ? {} : { display: "none" }}>
+              <div key={short.videoUrl} style={isExpanded ? {} : { display: "none" }}>
                 <Card key={short.videoUrl} sx={{ maxWidth: 345, border: "1px solid lightgrey" }}>
                   <video width="100%" src={`https://duypt6g4fe8mq.cloudfront.net/${short.videoUrl}`} />
                   <CardContent sx={{ minHeight: 300 }}>

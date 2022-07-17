@@ -4,7 +4,7 @@ import styles from "./styles.module.css";
 
 const Landing = () => {
   return (
-    <Grid container xs={12} justifyContent="center" marginTop={20} gap={5}>
+    <Grid container justifyContent="center" marginTop={20} gap={5}>
       <Grid item xs={7}>
         <Typography variant="h2">Landing Page</Typography>
       </Grid>
