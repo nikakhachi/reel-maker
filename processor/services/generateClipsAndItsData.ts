@@ -1,10 +1,8 @@
-import { v4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import logger from "../utils/logger";
 import { cutVideo } from "./ffmpeg.service";
 import { uploadToS3 } from "../aws";
-import { getVideoDurationInSeconds } from "get-video-duration";
 
 interface IArguments {
   nlpData: any;
@@ -12,11 +10,17 @@ interface IArguments {
   originalVideoPath: string;
   videoId: string;
   videoUrl: string;
+  videoDuration: number;
 }
 
-export const generateClipsAndItsData = async ({ nlpData, originalVideoPath, videoFolder, videoId, videoUrl }: IArguments) => {
-  const originalVideoDurationInSeconds = await getVideoDurationInSeconds(videoUrl);
-
+export const generateClipsAndItsData = async ({
+  nlpData,
+  originalVideoPath,
+  videoFolder,
+  videoId,
+  videoUrl,
+  videoDuration,
+}: IArguments) => {
   fs.mkdirSync(path.resolve(path.join(videoFolder, "clips")));
   fs.mkdirSync(path.resolve(path.join(videoFolder, "shorts")));
 
@@ -43,7 +47,7 @@ export const generateClipsAndItsData = async ({ nlpData, originalVideoPath, vide
   for (const chapter of nlpData.chapters) {
     const clipDuration = chapter.end / 1000 - chapter.start / 1000;
 
-    if ((originalVideoDurationInSeconds * 2) / 3 > clipDuration) {
+    if ((videoDuration * 2) / 3 > clipDuration) {
       const clipGistForFolderAndFileName = `${chapter.gist.replace(/\s/gi, "_")}_${clipIndex}`;
       const s3Path = `${videoId}/clips/${clipGistForFolderAndFileName}`;
 

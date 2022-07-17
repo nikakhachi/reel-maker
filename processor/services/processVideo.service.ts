@@ -14,9 +14,10 @@ interface IArguments {
   mp4Url: string;
   audioTranscriptId: string;
   youtubeVideoIdInDb: number;
+  videoDuration: number;
 }
 
-export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId, youtubeVideoIdInDb }: IArguments) => {
+export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId, youtubeVideoIdInDb, videoDuration }: IArguments) => {
   try {
     const generatedVideoId = `${videoId}`;
 
@@ -39,6 +40,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
       originalVideoPath: fullMp4Path,
       videoId: generatedVideoId,
       videoUrl: mp4Url,
+      videoDuration,
     });
 
     fs.rmdirSync(videoFolder, { recursive: true });
@@ -48,6 +50,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
       youtubeVideoIdInDb,
       data: processedVideos,
       videoId,
+      videoDuration,
     });
   } catch (error) {
     console.log(error);
@@ -57,6 +60,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
       youtubeVideoIdInDb,
       videoId,
       data: null,
+      videoDuration: 0,
     });
   }
 };

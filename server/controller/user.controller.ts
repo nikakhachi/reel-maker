@@ -5,16 +5,45 @@ import { queueAudioForTranscripting } from "../services/assemblyAI.service";
 import { getMp3LinkOfYoutubeVideo } from "../services/getMp3LinkOfYoutubeVideo";
 import { getMP4LinkOfYoutubeVideo } from "../services/getMp4LinkOfYoutubeVideo";
 import { sendVideoDataForProcessing } from "../services/sendVideoDataForProcessing.service";
-import { BadRequestException, InternalServerErrorException, NotFoundException, SuccessResponse } from "../utils/httpResponses";
+import {
+  BadRequestException,
+  ForbiddenException,
+  InternalServerErrorException,
+  NotFoundException,
+  SuccessResponse,
+} from "../utils/httpResponses";
 import logger from "../utils/logger";
 import * as bcrypt from "bcrypt";
 import { clearCookies } from "../services/cookie.service";
 import { downloadS3FolderAsZip } from "../aws";
+import { RequestUserType } from "../types";
+import { getVideoDurationInSeconds } from "get-video-duration";
+
+export const validateUserController = (req: Request, res: Response) => {
+  logger.debug("Send Credentials For User Validation");
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const user = req.user as RequestUserType;
+  new SuccessResponse(res, {
+    email: user.email,
+    username: user.username,
+    subscriptionActivationDate: user.subscriptionActivationDate,
+    secondsTranscripted: user.secondsTranscripted,
+    subscription: {
+      id: user.subscription.id,
+      title: user.subscription.title,
+      durationInDays: user.subscription.durationInDays,
+      priceInDollars: user.subscription.priceInDollars,
+      isActive: user.subscription.isActive,
+      transcriptionSeconds: user.subscription.transcriptionSeconds,
+    },
+  });
+};
 
 export const startVideoProcessingController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const user = req.user as User;
+  const user = req.user as RequestUserType;
   const { youtubeVideoUrl } = req.body;
   if (!youtubeVideoUrl) return new BadRequestException(res, "Youtube Video Url is not Provided");
   const videoId = youtubeVideoUrl.split("?v=")[1]?.split("&")[0];
@@ -26,8 +55,16 @@ export const startVideoProcessingController = async (req: Request, res: Response
   let mp3Link: undefined | string;
   let mp4Link: undefined | string;
   let audioTranscriptId: undefined | string;
+  let videoDuration: undefined | number;
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
+    videoDuration = await getVideoDurationInSeconds(mp4Link);
+    const transcriptSecondsLeft = user.subscription.transcriptionSeconds - user.secondsTranscripted;
+    if (transcriptSecondsLeft < Math.round(videoDuration))
+      return new ForbiddenException(
+        res,
+        `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`
+      );
   } catch (error: any) {
     if (error.status === "fail") {
       logger.error(error.msg);
@@ -60,6 +97,7 @@ export const startVideoProcessingController = async (req: Request, res: Response
     audioTranscriptId,
     videoId,
     youtubeVideoIdInDb: youtubeVideoInDb.id,
+    videoDuration,
   });
 
   new SuccessResponse(res, {
@@ -71,7 +109,7 @@ export const startVideoProcessingController = async (req: Request, res: Response
 export const getVideosController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const user = req.user as User;
+  const user = req.user as RequestUserType;
   const userVideos = await prisma.youtubeVideo.findMany({
     where: { userId: user.id },
     select: {
@@ -95,7 +133,7 @@ export const getVideosController = async (req: Request, res: Response) => {
 export const getVideoController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const user = req.user as User;
+  const user = req.user as RequestUserType;
   const { videoId } = req.params;
   if (typeof videoId !== "string") return new BadRequestException(res);
   const youtubeVideo = await prisma.youtubeVideo.findFirst({
@@ -136,7 +174,7 @@ export const getVideoController = async (req: Request, res: Response) => {
 export const updateAccountInfoController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const user = req.user as User;
+  const user = req.user as RequestUserType;
   const { username, email, currentPassword, newPassword } = req.body;
   if (!username || !email || !currentPassword) return new BadRequestException(res, "Fields are Missing");
   const isPasswordValid = bcrypt.compareSync(currentPassword, user?.password || "");
@@ -154,7 +192,7 @@ export const updateAccountInfoController = async (req: Request, res: Response) =
 export const downloadZippedVideosController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const user = req.user as User;
+  const user = req.user as RequestUserType;
   const { videoId } = req.params;
   const youtubeVideo = await prisma.youtubeVideo.findFirst({ where: { userId: user.id, videoId } });
   if (!youtubeVideo) return new BadRequestException(res);

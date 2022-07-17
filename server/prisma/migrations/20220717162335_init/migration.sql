@@ -6,8 +6,34 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "subscriptionId" INTEGER NOT NULL,
+    "subscriptionActivationDate" TIMESTAMP(3) NOT NULL,
+    "secondsTranscripted" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SubscriptionHistory" (
+    "id" SERIAL NOT NULL,
+    "activationDate" TIMESTAMP(3) NOT NULL,
+    "secondsTranscripted" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "subscriptionId" INTEGER NOT NULL,
+
+    CONSTRAINT "SubscriptionHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Subscription" (
+    "id" SERIAL NOT NULL,
+    "priceInDollars" DOUBLE PRECISION NOT NULL,
+    "durationInDays" INTEGER NOT NULL,
+    "transcriptionSeconds" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL,
+
+    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -55,6 +81,15 @@ CREATE TABLE "Short" (
 
     CONSTRAINT "Short_pkey" PRIMARY KEY ("id")
 );
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SubscriptionHistory" ADD CONSTRAINT "SubscriptionHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SubscriptionHistory" ADD CONSTRAINT "SubscriptionHistory_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "YoutubeVideo" ADD CONSTRAINT "YoutubeVideo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

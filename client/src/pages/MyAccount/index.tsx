@@ -1,11 +1,13 @@
 import { Button, Checkbox, CircularProgress, Grid, TextField, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
 import { UserContext } from "../../context/UserContext";
 import { validateEmail } from "../../utils/validateEmail";
+import moment from "moment";
 import styles from "./styles.module.css";
+import { useUserProvider } from "../../hooks/useUserProvider";
 
 const MyAccount = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -24,7 +26,24 @@ const MyAccount = () => {
   const isEmailChanged = email !== user?.email;
   const isUsernameChanged = username !== user?.username;
 
-  if (!user) return null;
+  const userProvider = useUserProvider();
+
+  useEffect(() => {
+    userContext?.setUser(null);
+  }, []);
+
+  useEffect(() => {
+    if (userProvider.data) {
+      userContext?.setUser(userProvider.data);
+    }
+  }, [userProvider.data]);
+
+  if (!user || userProvider.loading)
+    return (
+      <div style={{ padding: "1rem" }}>
+        <CircularProgress />
+      </div>
+    );
 
   const handleUpdate = async () => {
     if (!email || !username || !currentPassword) return snackbarContext?.openSnackbar("Fill all fields", "error");
@@ -50,8 +69,15 @@ const MyAccount = () => {
   };
 
   return (
-    <div style={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
-      <Grid container gap={3}>
+    <div style={{ padding: "1rem" }}>
+      <Typography variant="h6">Subscription : {user.subscription.title} Plan</Typography>
+      <Typography variant="h6">
+        Active Until :{" "}
+        {moment(user.subscriptionActivationDate).add(user.subscription.durationInDays, "days").format("MMM DD, YYYY hh:mm A")}
+      </Typography>
+      <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
+      <Typography variant="h6">Transcription Seconds Left : {user.subscription.transcriptionSeconds - user.secondsTranscripted}</Typography>
+      <Grid container gap={3} marginTop={5}>
         <Grid container item xs={5} gap={2}>
           <Grid item xs={12}>
             <TextField

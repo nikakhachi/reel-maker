@@ -5,11 +5,13 @@ import {
   getVideosController,
   startVideoProcessingController,
   updateAccountInfoController,
+  validateUserController,
 } from "../../controller/user.controller";
 import { authenticationGuard } from "../../middleware/authentication.guard";
 
 const router = Router();
 
+router.get("/", authenticationGuard, validateUserController);
 router.get("/videos", authenticationGuard, getVideosController);
 router.get("/videos/:videoId", authenticationGuard, getVideoController);
 router.post("/generate-video", authenticationGuard, startVideoProcessingController);

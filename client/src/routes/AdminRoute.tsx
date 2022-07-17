@@ -14,7 +14,7 @@ const AdminRoute = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await api.get("/v1/auth/validate");
+        const { data } = await api.get("/v1/user");
         userContext?.setUser(data);
         setIsAuthorized(true);
       } catch (error) {

@@ -7,12 +7,14 @@ export const sendVideoDataForProcessing = ({
   mp4Url,
   audioTranscriptId,
   youtubeVideoIdInDb,
+  videoDuration,
 }: {
   videoId: string;
   mp3Url: string;
   mp4Url: string;
   audioTranscriptId: string;
   youtubeVideoIdInDb: number;
+  videoDuration: number;
 }) => {
   axios
     .post(
@@ -23,6 +25,7 @@ export const sendVideoDataForProcessing = ({
         audioTranscriptId,
         videoId,
         youtubeVideoIdInDb,
+        videoDuration,
       },
       { headers: { authorization: process.env.VIDEO_PROCESSOR_ACCESS_KEY || "" } }
     )

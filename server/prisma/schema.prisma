@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,13 +8,39 @@ datasource db {
 }
 
 model User {
-  id              Int                @id @default(autoincrement())
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt 
-  username        String
-  email           String
-  password        String
-  videos          YoutubeVideo[]
+  id                          Int                @id @default(autoincrement())
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt 
+  username                    String
+  email                       String
+  password                    String
+  subscriptionId              Int
+  subscriptionActivationDate  DateTime
+  secondsTranscripted         Int                @default(0)
+  subscription                Subscription       @relation(fields: [subscriptionId],references: [id])
+  videos                      YoutubeVideo[]
+  subscriptionHistory         SubscriptionHistory[]
+}
+
+model SubscriptionHistory {
+  id                    Int               @id @default(autoincrement())
+  activationDate        DateTime
+  secondsTranscripted   Int         
+  userId                Int
+  user                  User              @relation(fields: [userId], references: [id])
+  subscriptionId        Int
+  subscription          Subscription      @relation(fields: [subscriptionId],references: [id])
+}
+
+model Subscription {
+  id                    Int               @id @default(autoincrement())
+  priceInDollars        Float
+  durationInDays        Int
+  transcriptionSeconds  Int
+  title                 String
+  activeUsers           User[]
+  subscriptionHistories SubscriptionHistory[]
+  isActive              Boolean
 }
 
 model YoutubeVideo {
@@ -51,7 +74,7 @@ model Clip {
 }
 
 model Short {
-  id                        Int                     @id @default(autoincrement())
+  id                        Int                      @id @default(autoincrement())
   createdAt                 DateTime                 @default(now())
   videoUrl                  String
   subtitlesUrl              String

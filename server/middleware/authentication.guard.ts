@@ -12,7 +12,7 @@ const authenticationGuard = async (req: Request, res: Response, next: NextFuncti
   try {
     const payload = jwt.verify(accessToken, process.env.JWT_KEY || "");
     if (typeof payload === "string") return new Error("Internal Server Error");
-    const user = await prisma.user.findFirst({ where: { id: payload.id } });
+    const user = await prisma.user.findFirst({ where: { id: payload.id }, include: { subscription: true } });
     if (!user) return new UnauthorizedException(res);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -24,7 +24,7 @@ const authenticationGuard = async (req: Request, res: Response, next: NextFuncti
       logger.debug("Access Token is not Valid. Checking Refresh Token");
       const payload = jwt.verify(refreshToken, process.env.JWT_KEY || "accessKey");
       if (typeof payload === "string") return new Error("Internal Server Error");
-      const user = await prisma.user.findFirst({ where: { id: payload.id } });
+      const user = await prisma.user.findFirst({ where: { id: payload.id }, include: { subscription: true } });
       if (!user) return new UnauthorizedException(res);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

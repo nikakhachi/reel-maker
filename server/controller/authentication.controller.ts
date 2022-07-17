@@ -6,13 +6,6 @@ import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
 import * as bcrypt from "bcrypt";
 import { prisma } from "../prisma";
 
-export const validateUserController = (req: Request, res: Response) => {
-  logger.debug("Send Credentials For User Validation");
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  new SuccessResponse(res, { email: req.user.email, username: req.user.username });
-};
-
 export const signInController = async (req: Request, res: Response) => {
   logger.debug("Sign In User");
   const { username, password } = req.body;
@@ -37,10 +30,33 @@ export const registerController = async (req: Request, res: Response) => {
   const existingUser = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existingUser) return new BadRequestException(res, "User Already Exists");
   const hashedPassword = await bcrypt.hash(password, 10);
-  const createdUser = await prisma.user.create({ data: { email, password: hashedPassword, username } });
+  const createdUser = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      username,
+      subscriptionId: 1,
+      subscriptionActivationDate: new Date(),
+    },
+    include: {
+      subscription: {
+        select: {
+          id: true,
+          title: true,
+          durationInDays: true,
+          priceInDollars: true,
+          isActive: true,
+          transcriptionSeconds: true,
+        },
+      },
+    },
+  });
   new SuccessResponse(res, {
     email: createdUser.email,
     username: createdUser.username,
+    subscriptionActivationDate: createdUser.subscriptionActivationDate,
+    secondsTranscripted: createdUser.secondsTranscripted,
+    subscription: createdUser.subscription,
   });
 };
 
