@@ -4,9 +4,9 @@ import logger from "../utils/logger";
 import * as fs from "fs";
 import path from "path";
 import { FILE_PROCESSING_FOLDER, NODEJS_ROOT_FOLDER } from "../constants";
-import { v4 } from "uuid";
 import { getAudioTranscriptResults } from "./assemblyAI.service";
 import axios from "axios";
+import { uploadToS3 } from "../aws";
 
 interface IArguments {
   videoId: string;
@@ -18,7 +18,7 @@ interface IArguments {
 
 export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId, youtubeVideoIdInDb }: IArguments) => {
   try {
-    const generatedVideoId = `${videoId}_${v4()}`;
+    const generatedVideoId = `${videoId}`;
 
     fs.mkdirSync(path.resolve(path.join(NODEJS_ROOT_FOLDER, FILE_PROCESSING_FOLDER, generatedVideoId)));
 
@@ -30,7 +30,7 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
 
     logger.info("Getting Nlp Results..");
     const nlp = await getAudioTranscriptResults(audioTranscriptId);
-    fs.writeFile(`${videoFolder}/${generatedVideoId}_NLP.ts`, JSON.stringify(nlp, null, 2), (err) => {});
+    await uploadToS3(`${generatedVideoId}_nlp_response.json`, Buffer.from(JSON.stringify(nlp), "utf-8"));
 
     logger.info(`Generating Clips..`);
     const processedVideos = await generateClipsAndItsData({

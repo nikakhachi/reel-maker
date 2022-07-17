@@ -23,7 +23,7 @@ export const getAudioTranscriptResults = async (queueId: string) => {
   let response: any;
   do {
     logger.info("Waiting couple of seconds to check the status");
-    await new Promise((res, rej) => setTimeout(() => res(""), 10000));
+    await new Promise((res, rej) => setTimeout(() => res(""), 20000));
     const processResult = await checkProcess(queueId);
     statusName = processResult.status;
     logger.info(`Status is ${statusName}`);
