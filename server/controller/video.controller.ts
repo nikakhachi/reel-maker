@@ -5,13 +5,16 @@ import logger from "../utils/logger";
 
 export const videoStatusUpdateController = async (req: Request, res: Response) => {
   const { msg, youtubeVideoIdInDb, data, videoId, videoDuration } = req.body;
+  const youtubeVideo = await prisma.youtubeVideo.findFirst({ where: { id: youtubeVideoIdInDb } });
+  if (!youtubeVideo) return new BadRequestException(res);
+  await prisma.user.update({ where: { id: youtubeVideo.userId }, data: { isProcessing: false } });
   if (!msg || !youtubeVideoIdInDb) return new BadRequestException(res);
   if (msg === "error") {
     logger.error(`Error Occured while processing ${youtubeVideoIdInDb}`);
     await prisma.youtubeVideo.update({ where: { id: youtubeVideoIdInDb }, data: { statusId: 3 } });
   }
   if (msg === "success") {
-    const youtubeVideo = await prisma.youtubeVideo.update({
+    await prisma.youtubeVideo.update({
       where: { id: youtubeVideoIdInDb },
       data: { statusId: 1, clips: { create: data.clips }, shorts: { create: data.shorts } },
     });

@@ -6,6 +6,7 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "isProcessing" BOOLEAN NOT NULL DEFAULT false,
     "subscriptionId" INTEGER NOT NULL,
     "subscriptionActivationDate" TIMESTAMP(3) NOT NULL,
     "secondsTranscripted" INTEGER NOT NULL DEFAULT 0,

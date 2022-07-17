@@ -44,14 +44,24 @@ export const startVideoProcessingController = async (req: Request, res: Response
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const user = req.user as RequestUserType;
+  const isUserProcessingVideo = await prisma.user.findFirst({ where: { id: user.id }, select: { isProcessing: true } });
+  if (!isUserProcessingVideo) return new InternalServerErrorException(res);
+  if (isUserProcessingVideo.isProcessing) {
+    return new BadRequestException(res, "Other video is already being processed");
+  }
   const { youtubeVideoUrl } = req.body;
   if (!youtubeVideoUrl) return new BadRequestException(res, "Youtube Video Url is not Provided");
   const videoId = youtubeVideoUrl.split("?v=")[1]?.split("&")[0];
+  if (!videoId) return new BadRequestException(res, "Invalid Url");
+  const sendError = async (callback: () => void) => {
+    await prisma.user.update({ where: { id: user.id }, data: { isProcessing: false } });
+    callback();
+  };
+  await prisma.user.update({ where: { id: user.id }, data: { isProcessing: true } });
   const existingYoutubeVideoInDb = await prisma.youtubeVideo.findFirst({
     where: { videoId, userId: user.id },
   });
-  if (existingYoutubeVideoInDb) return new BadRequestException(res, "Video has been already Generated");
-  if (!videoId) return new BadRequestException(res, "Invalid Url");
+  if (existingYoutubeVideoInDb) return sendError(() => new BadRequestException(res, "Video has been already Generated"));
   let mp3Link: undefined | string;
   let mp4Link: undefined | string;
   let audioTranscriptId: undefined | string;
@@ -61,32 +71,32 @@ export const startVideoProcessingController = async (req: Request, res: Response
     videoDuration = await getVideoDurationInSeconds(mp4Link);
     const transcriptSecondsLeft = user.subscription.transcriptionSeconds - user.secondsTranscripted;
     if (transcriptSecondsLeft < Math.round(videoDuration))
-      return new ForbiddenException(
-        res,
-        `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`
+      return sendError(
+        () =>
+          new ForbiddenException(res, `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`)
       );
   } catch (error: any) {
     if (error.status === "fail") {
       logger.error(error.msg);
-      return new BadRequestException(res, error.msg);
+      return sendError(() => new BadRequestException(res, error.msg));
     } else {
       logger.error(error);
-      return new InternalServerErrorException(res);
+      return sendError(() => new InternalServerErrorException(res));
     }
   }
   try {
     mp3Link = await getMp3LinkOfYoutubeVideo(youtubeVideoUrl);
-    if (typeof mp3Link !== "string") return new InternalServerErrorException(res);
+    if (typeof mp3Link !== "string") return sendError(() => new InternalServerErrorException(res));
   } catch (error) {
     console.log(error);
-    return new BadRequestException(res);
+    return sendError(() => new BadRequestException(res));
   }
   try {
     audioTranscriptId = await queueAudioForTranscripting(mp3Link);
   } catch (error) {
     console.log(error);
     logger.error("Error Queuing up the Audio for Transcript");
-    return new BadRequestException(res);
+    return sendError(() => new BadRequestException(res));
   }
   const youtubeVideoInDb = await prisma.youtubeVideo.create({ data: { statusId: 2, userId: user.id, videoId } });
 
