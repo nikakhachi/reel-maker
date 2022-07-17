@@ -7,7 +7,7 @@ export type YoutubeVideoType = {
   _count: { clips: number; shorts: number };
 };
 
-export const useYoutubeVideosProvider = () => {
+export const useYoutubeVideosProvider = (autoFetch = true) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<YoutubeVideoType[]>();
   const [error, setError] = useState<any>();
@@ -25,7 +25,7 @@ export const useYoutubeVideosProvider = () => {
   };
 
   useEffect(() => {
-    fetch();
+    if (autoFetch) fetch();
   }, []);
 
   const refetch = () => {

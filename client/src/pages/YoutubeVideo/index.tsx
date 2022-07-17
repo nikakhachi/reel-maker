@@ -1,33 +1,53 @@
 import { CircularProgress } from "@mui/material";
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import VideoSection from "../../components/VideoSection";
-import { useProcessedVideosProvider } from "../../hooks/useProcessedVideosProvider";
+import { UserContext } from "../../context/UserContext";
+import { ProcessedVideoType, useProcessedVideosProvider } from "../../hooks/useProcessedVideosProvider";
 import styles from "./styles.module.css";
 
 const YoutubeVideo = () => {
+  const userContext = useContext(UserContext);
   const { videoId } = useParams<{ videoId: string }>();
   const navigate = useNavigate();
 
-  const processedVideos = useProcessedVideosProvider(videoId || "");
+  const [processedVideos, setProcessedVideos] = useState<ProcessedVideoType>();
+
+  const processedVideosProvider = useProcessedVideosProvider(videoId || "", false);
 
   useEffect(() => {
-    if (processedVideos.error) {
+    const processedVideosInCache = userContext?.youtubeVideosFullData.find((item) => item.videoId === videoId);
+    if (processedVideosInCache) {
+      setProcessedVideos({ clips: processedVideosInCache.clips, shorts: processedVideosInCache.shorts });
+    } else {
+      processedVideosProvider.refetch();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (processedVideosProvider.data && videoId && !processedVideosProvider.loading) {
+      setProcessedVideos(processedVideosProvider.data);
+      userContext?.setYoutubeVideosFullData((arr) => [...arr, { videoId, ...processedVideosProvider.data }]);
+    }
+  }, [processedVideosProvider.data]);
+
+  useEffect(() => {
+    if (processedVideosProvider.error) {
       navigate("/dashboard/youtube-videos");
     }
-  }, [processedVideos.error]);
+  }, [processedVideosProvider.error]);
 
   return (
     <div style={{ padding: "1rem" }}>
-      {processedVideos.loading ? (
+      {!processedVideos ? (
         <CircularProgress />
       ) : (
         <>
           <div className={styles.header}>
             <iframe width="600" height="300" src={`https://www.youtube.com/embed/${videoId}`} />
           </div>
-          <VideoSection title="Clips" clipVideos={processedVideos.data.clips} />
-          <VideoSection title="Shorts" shortVideos={processedVideos.data.shorts} />
+          <VideoSection title="Clips" clipVideos={processedVideos.clips} />
+          <VideoSection title="Shorts" shortVideos={processedVideos.shorts} />
         </>
       )}
     </div>

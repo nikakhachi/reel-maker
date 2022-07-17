@@ -23,7 +23,7 @@ export type ProcessedVideoType = {
   clips: ClipVideoType[];
 };
 
-export const useProcessedVideosProvider = (videoId: string) => {
+export const useProcessedVideosProvider = (videoId: string, autoFetch = true) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ProcessedVideoType>({ shorts: [], clips: [] });
   const [error, setError] = useState<any>();
@@ -41,7 +41,7 @@ export const useProcessedVideosProvider = (videoId: string) => {
   };
 
   useEffect(() => {
-    fetch();
+    if (autoFetch) fetch();
   }, []);
 
   const refetch = () => {
