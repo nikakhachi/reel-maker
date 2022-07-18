@@ -70,15 +70,23 @@ const MyAccount = () => {
     }
   };
 
+  const handlePlanUpgrade = async (subscriptionId: string, priceId: string) => {
+    const { data } = await api.post("/v1/subscription/upgrade", { subscriptionId, priceId });
+    const link = document.createElement("a");
+    link.href = data.url;
+    link.click();
+    link.remove();
+  };
+
   return (
     <div style={{ padding: "1rem" }}>
-      <Typography variant="h6">Subscription : {user.subscription.title} Plan</Typography>
+      {/* <Typography variant="h6">Subscription : {user.subscription.title} Plan</Typography>
       <Typography variant="h6">
         Active Until :{" "}
         {moment(user.subscriptionActivationDate).add(user.subscription.durationInDays, "days").format("MMM DD, YYYY hh:mm A")}
       </Typography>
       <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
-      <Typography variant="h6">Transcription Seconds Left : {user.subscription.transcriptionSeconds - user.secondsTranscripted}</Typography>
+      <Typography variant="h6">Transcription Seconds Left : {user.subscription.transcriptionSeconds - user.secondsTranscripted}</Typography> */}
       <Grid container gap={3} marginTop={5}>
         <Grid container item xs={5} gap={2}>
           <Grid item xs={12}>
@@ -165,12 +173,16 @@ const MyAccount = () => {
             {subscriptionsProvider.data.map((subscription) => (
               <Grid item className={styles.subscriptionItem} xs={12} sm={12} md={5} xl={3}>
                 <p className={styles.subTitle}>
-                  {subscription.title} {user.subscription.title === subscription.title && "(Current Plan)"}
+                  {subscription.name} {user.subscriptionData?.priceId === subscription.priceId && "(Current)"}
                 </p>
                 <p className={styles.subDays}>{subscription.durationInDays} Days</p>
                 <p className={styles.subSeconds}>{subscription.transcriptionSeconds} Seconds Video Transcription</p>
-                <p className={styles.subPrice}>{subscription.priceInDollars}$</p>
-                <Button disabled={user.subscription.title === subscription.title} variant="contained">
+                <p className={styles.subPrice}>{subscription.priceInCents / 100}$</p>
+                <Button
+                  disabled={user.subscriptionData?.priceId === subscription.priceId}
+                  onClick={() => handlePlanUpgrade(subscription.productId, subscription.priceId)}
+                  variant="contained"
+                >
                   Upgrade
                 </Button>
               </Grid>

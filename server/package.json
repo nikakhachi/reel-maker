@@ -27,6 +27,7 @@
     "@types/jest": "^27.4.1",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.21",
+    "@types/stripe": "^8.0.417",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
     "eslint": "^8.10.0",
@@ -54,6 +55,7 @@
     "jsonwebtoken": "^8.5.1",
     "node-cache": "^5.1.2",
     "s3-zip": "^3.2.1",
+    "stripe": "^9.13.0",
     "winston": "^3.6.0",
     "xml-stream": "^0.4.5"
   }

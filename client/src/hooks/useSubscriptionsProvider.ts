@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 
 export type SubscriptionType = {
+  productId: string;
   durationInDays: number;
-  priceInDollars: number;
-  title: string;
+  priceInCents: number;
+  name: string;
   transcriptionSeconds: number;
+  priceId: string;
 };
 
 export const useSubscriptionsProvider = (autoFetch = true) => {

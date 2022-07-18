@@ -3,20 +3,19 @@ import { ProcessedVideoType } from "../hooks/useProcessedVideosProvider";
 import { YoutubeVideoType } from "../hooks/useYoutubeVideosProvider";
 
 export type SubscriptionType = {
-  id: number;
-  title: string;
-  durationInDays: number;
-  priceInDollars: number;
-  isActive: boolean;
-  transcriptionSeconds: number;
+  activatedAt: Date;
+  endsAt: Date;
+  priceId: String;
+  priceInCents: Number;
+  productId: String;
+  subscriptionId: String;
+  transcriptionSeconds: Number;
 };
 
 export type UserType = {
   username: string;
   email: string;
-  subscriptionActivationDate: Date;
-  subscription: SubscriptionType;
-  secondsTranscripted: number;
+  subscriptionData: SubscriptionType | null;
 };
 
 type UserContextType = {

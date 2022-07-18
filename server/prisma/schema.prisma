@@ -15,34 +15,11 @@ model User {
   email                       String
   password                    String
   isProcessing                Boolean            @default(false)
-  subscriptionId              Int
-  subscriptionActivationDate  DateTime
+  stripeId                    String
   secondsTranscripted         Int                @default(0)
-  subscription                Subscription       @relation(fields: [subscriptionId],references: [id])
   videos                      YoutubeVideo[]
-  subscriptionHistory         SubscriptionHistory[]
 }
 
-model SubscriptionHistory {
-  id                    Int               @id @default(autoincrement())
-  activationDate        DateTime
-  secondsTranscripted   Int         
-  userId                Int
-  user                  User              @relation(fields: [userId], references: [id])
-  subscriptionId        Int
-  subscription          Subscription      @relation(fields: [subscriptionId],references: [id])
-}
-
-model Subscription {
-  id                    Int               @id @default(autoincrement())
-  priceInDollars        Float
-  durationInDays        Int
-  transcriptionSeconds  Int
-  title                 String
-  activeUsers           User[]
-  subscriptionHistories SubscriptionHistory[]
-  isActive              Boolean
-}
 
 model YoutubeVideo {
   id                Int               @id @default(autoincrement())

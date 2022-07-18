@@ -18,25 +18,18 @@ import { clearCookies } from "../services/cookie.service";
 import { downloadS3FolderAsZip } from "../aws";
 import { RequestUserType } from "../types";
 import { getVideoDurationInSeconds } from "get-video-duration";
+import { getUserSubscriptionPlan } from "../services/stripe.service";
 
-export const validateUserController = (req: Request, res: Response) => {
+export const validateUserController = async (req: Request, res: Response) => {
   logger.debug("Send Credentials For User Validation");
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const user = req.user as RequestUserType;
+  const subscriptionData = await getUserSubscriptionPlan(user.stripeId);
   new SuccessResponse(res, {
     email: user.email,
     username: user.username,
-    subscriptionActivationDate: user.subscriptionActivationDate,
-    secondsTranscripted: user.secondsTranscripted,
-    subscription: {
-      id: user.subscription.id,
-      title: user.subscription.title,
-      durationInDays: user.subscription.durationInDays,
-      priceInDollars: user.subscription.priceInDollars,
-      isActive: user.subscription.isActive,
-      transcriptionSeconds: user.subscription.transcriptionSeconds,
-    },
+    subscriptionData,
   });
 };
 
@@ -69,12 +62,12 @@ export const startVideoProcessingController = async (req: Request, res: Response
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
     videoDuration = await getVideoDurationInSeconds(mp4Link);
-    const transcriptSecondsLeft = user.subscription.transcriptionSeconds - user.secondsTranscripted;
-    if (transcriptSecondsLeft < Math.round(videoDuration))
-      return sendError(
-        () =>
-          new ForbiddenException(res, `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`)
-      );
+    // const transcriptSecondsLeft = user.subscription.transcriptionSeconds - user.secondsTranscripted;
+    // if (transcriptSecondsLeft < Math.round(videoDuration))
+    //   return sendError(
+    //     () =>
+    //       new ForbiddenException(res, `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`)
+    //   );
   } catch (error: any) {
     if (error.status === "fail") {
       logger.error(error.msg);

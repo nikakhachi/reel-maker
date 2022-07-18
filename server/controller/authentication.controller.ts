@@ -5,6 +5,7 @@ import logger from "../utils/logger";
 import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
 import * as bcrypt from "bcrypt";
 import { prisma } from "../prisma";
+import { getUserSubscriptionPlan, stripe } from "../services/stripe.service";
 
 export const signInController = async (req: Request, res: Response) => {
   logger.debug("Sign In User");
@@ -13,6 +14,7 @@ export const signInController = async (req: Request, res: Response) => {
   const user = await prisma.user.findFirst({ where: { username } });
   const isPasswordValid = bcrypt.compareSync(password, user?.password || "");
   if (!user || !isPasswordValid) return new BadRequestException(res, "Invalid Credentials");
+  const subscriptionData = await getUserSubscriptionPlan(user.stripeId);
   const accessToken = await signAccessToken(user.id);
   const refreshToken = await signRefreshToken(user.id);
   setAccessTokenCookie(res, accessToken);
@@ -20,6 +22,7 @@ export const signInController = async (req: Request, res: Response) => {
   new SuccessResponse(res, {
     email: user.email,
     username: user.username,
+    subscriptionData,
   });
 };
 
@@ -30,33 +33,22 @@ export const registerController = async (req: Request, res: Response) => {
   const existingUser = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existingUser) return new BadRequestException(res, "User Already Exists");
   const hashedPassword = await bcrypt.hash(password, 10);
+  const stripeAccount = await stripe.customers.create({
+    email,
+    name: username,
+  });
   const createdUser = await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
       username,
-      subscriptionId: 1,
-      subscriptionActivationDate: new Date(),
-    },
-    include: {
-      subscription: {
-        select: {
-          id: true,
-          title: true,
-          durationInDays: true,
-          priceInDollars: true,
-          isActive: true,
-          transcriptionSeconds: true,
-        },
-      },
+      stripeId: stripeAccount.id,
     },
   });
   new SuccessResponse(res, {
     email: createdUser.email,
     username: createdUser.username,
-    subscriptionActivationDate: createdUser.subscriptionActivationDate,
-    secondsTranscripted: createdUser.secondsTranscripted,
-    subscription: createdUser.subscription,
+    subscriptionData: null,
   });
 };
 

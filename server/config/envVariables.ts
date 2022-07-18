@@ -13,6 +13,7 @@ const ENV_VARIABLES = [
   "AWS_SECRET_ACCESS_KEY_ID",
   "AWS_REGION",
   "AWS_S3_BUCKET_NAME",
+  "STRIPE_KEY",
 ];
 const NODE_ENV_OPTIONS = ["development", "production", "testing"];
 
