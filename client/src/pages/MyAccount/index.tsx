@@ -72,6 +72,9 @@ const MyAccount = () => {
   };
 
   const handlePlanUpgrade = async (subscriptionId: string, priceId: string) => {
+    if (user.subscriptionData) {
+      return snackbarContext?.openSnackbar("Please cancel your subscription first", "error");
+    }
     const { data } = await api.post("/v1/subscription/upgrade", { subscriptionId, priceId });
     const link = document.createElement("a");
     link.href = data.url;
@@ -80,7 +83,7 @@ const MyAccount = () => {
   };
 
   const handleSubscriptionCancel = async () => {
-    if (window.confirm()) {
+    if (window.confirm("Cancel subscription ?")) {
       await api.post(`/v1/subscription/cancel`, {});
       window.location.reload();
     }
@@ -91,10 +94,17 @@ const MyAccount = () => {
       {!user.subscriptionData ? (
         <>
           <Typography variant="h6">Not Subscribed</Typography>
-          <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
-          <Typography variant="h6">
-            Transcription Seconds Left : {TRANSRIPTION_SECONDS_FOR_FREE_TRIAL - user.secondsTranscripted}
-          </Typography>
+          {moment(user.freeTrialEndDate).isBefore(moment(new Date())) ? (
+            <Typography variant="h6">Free Trial has ended</Typography>
+          ) : (
+            <>
+              <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
+              <Typography variant="h6">
+                Transcription Seconds Left : {TRANSRIPTION_SECONDS_FOR_FREE_TRIAL - user.secondsTranscripted}
+              </Typography>
+              <Typography variant="h6">Free trials ends at {moment(user.freeTrialEndDate).format("MMM DD, YYYY hh:mm A")}</Typography>
+            </>
+          )}
         </>
       ) : (
         <>

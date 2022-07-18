@@ -6,6 +6,8 @@ import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
 import * as bcrypt from "bcrypt";
 import { prisma } from "../prisma";
 import { getUserSubscriptionPlan, stripe } from "../services/stripe.service";
+import moment from "moment";
+import { FREE_TRIAL_DURAITON_IN_DAYS } from "../constants";
 
 export const signInController = async (req: Request, res: Response) => {
   logger.debug("Sign In User");
@@ -24,6 +26,7 @@ export const signInController = async (req: Request, res: Response) => {
     secondsTranscripted: user.secondsTranscripted,
     username: user.username,
     subscriptionData,
+    freeTrialEndDate: !subscriptionData ? moment(user.createdAt).add(FREE_TRIAL_DURAITON_IN_DAYS, "days") : undefined,
   });
 };
 
@@ -51,6 +54,7 @@ export const registerController = async (req: Request, res: Response) => {
     username: createdUser.username,
     secondsTranscripted: createdUser.secondsTranscripted,
     subscriptionData: null,
+    freeTrialEndDate: moment(createdUser.createdAt).add(FREE_TRIAL_DURAITON_IN_DAYS, "days"),
   });
 };
 

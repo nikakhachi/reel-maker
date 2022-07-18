@@ -18,6 +18,7 @@ export type UserType = {
   email: string;
   secondsTranscripted: number;
   subscriptionData: SubscriptionType | null;
+  freeTrialEndDate: Date | null;
 };
 
 type UserContextType = {

@@ -33,6 +33,7 @@ export const validateUserController = async (req: Request, res: Response) => {
     username: user.username,
     secondsTranscripted: user.secondsTranscripted,
     subscriptionData,
+    freeTrialEndDate: !subscriptionData ? moment(user.createdAt).add(FREE_TRIAL_DURAITON_IN_DAYS, "days") : undefined,
   });
 };
 
