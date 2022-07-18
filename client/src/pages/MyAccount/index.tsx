@@ -9,6 +9,7 @@ import moment from "moment";
 import styles from "./styles.module.css";
 import { useUserProvider } from "../../hooks/useUserProvider";
 import { useSubscriptionsProvider } from "../../hooks/useSubscriptionsProvider";
+import { TRANSRIPTION_SECONDS_FOR_FREE_PLAN } from "../../constants";
 
 const MyAccount = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -81,7 +82,11 @@ const MyAccount = () => {
   return (
     <div style={{ padding: "1rem" }}>
       {!user.subscriptionData ? (
-        <p>Not Subscribed</p>
+        <>
+          <Typography variant="h6">Not Subscribed</Typography>
+          <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
+          <Typography variant="h6">Transcription Seconds Left : {TRANSRIPTION_SECONDS_FOR_FREE_PLAN - user.secondsTranscripted}</Typography>
+        </>
       ) : (
         <>
           <Typography variant="h6">Subscription : {user.subscriptionData.name} Plan</Typography>
