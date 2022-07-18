@@ -31,7 +31,18 @@ export const processVideo = async ({ videoId, mp3Url, mp4Url, audioTranscriptId,
 
     logger.info("Getting Nlp Results..");
     const nlp = await getAudioTranscriptResults(audioTranscriptId);
-    await uploadToS3(`${generatedVideoId}_nlp_response.json`, Buffer.from(JSON.stringify(nlp), "utf-8"));
+    const hasNlpErrored = nlp.status === "error";
+    await uploadToS3(`${generatedVideoId}_nlp${hasNlpErrored ? "_ERROR" : ""}_response.json`, Buffer.from(JSON.stringify(nlp), "utf-8"));
+    if (hasNlpErrored) {
+      fs.rmdirSync(videoFolder, { recursive: true });
+      return await axios.post(`${process.env.SERVER_ENDPOINT}/v1/video/status-update`, {
+        msg: "error",
+        youtubeVideoIdInDb,
+        videoId,
+        data: null,
+        videoDuration: 0,
+      });
+    }
 
     logger.info(`Generating Clips..`);
     const processedVideos = await generateClipsAndItsData({

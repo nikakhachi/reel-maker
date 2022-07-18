@@ -29,10 +29,13 @@ export const getAudioTranscriptResults = async (queueId: string) => {
     logger.info(`Status is ${statusName}`);
     if (statusName === "completed") {
       response = processResult;
+    } else if (statusName === "error") {
+      logger.error("Assembly AI failed to transcript video");
+      response = processResult;
     } else {
       logger.info("Retrying");
     }
-  } while (statusName !== "completed");
+  } while (statusName !== "completed" && statusName !== "error");
   logger.info("Returning process NLP audio");
   return response;
 };
