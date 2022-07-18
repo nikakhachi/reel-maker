@@ -14,6 +14,7 @@ export const upgradeSubscriptionController = async (req: Request, res: Response)
   const user = req.user as RequestUserType;
   const { priceId } = req.body;
   const stripeResponse = await subscribeToPlan(user.stripeId, priceId);
+  await prisma.user.update({ where: { id: user.id }, data: { secondsTranscripted: 0 } });
   new SuccessResponse(res, stripeResponse);
 };
 
