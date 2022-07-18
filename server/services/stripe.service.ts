@@ -13,6 +13,18 @@ export type UserSubscriptionType = {
 
 export const stripe = new Stripe(process.env.STRIPE_KEY || "", { apiVersion: "2020-08-27" });
 
+export const subscribeToPlan = async (customerId: string, priceId: string) => {
+  const response = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "subscription",
+    customer: customerId,
+    subscription_data: { items: [{ plan: priceId }] },
+    success_url: "http://localhost:3000/dashboard/my-account",
+    cancel_url: "http://localhost:3000/dashboard/my-account",
+  });
+  return response;
+};
+
 export const getUserSubscriptionPlan = async (userStripeId: string) => {
   const data = (await stripe.customers.retrieve(userStripeId, { expand: ["subscriptions"] })) as Stripe.Customer;
   const subscription = data.subscriptions?.data[0];
@@ -45,4 +57,8 @@ export const getAllSubscriptionPlans = async () => {
     priceId: item.id,
     productId: product?.id,
   }));
+};
+
+export const cancelSubscription = async (subscriptionId: string) => {
+  await stripe.subscriptions.del(subscriptionId);
 };

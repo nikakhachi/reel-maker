@@ -18,7 +18,7 @@ const authenticationGuard = async (req: Request, res: Response, next: NextFuncti
     const subscriptionData = await getUserSubscriptionPlan(user.stripeId);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    req.user = { ...user, ...subscriptionData };
+    req.user = { ...user, subscription: { ...subscriptionData } };
     logger.debug("Access Token is Valid.");
     next();
   } catch (e) {
@@ -31,7 +31,7 @@ const authenticationGuard = async (req: Request, res: Response, next: NextFuncti
       const subscriptionData = await getUserSubscriptionPlan(user.stripeId);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      req.user = { ...user, ...subscriptionData };
+      req.user = { ...user, subscription: { ...subscriptionData } };
       logger.debug("Refresh Token is Valid. Assigning new Access and Refresh Tokens");
       const newAccessToken = await signAccessToken(user.id);
       const newRefreshToken = await signRefreshToken(user.id);

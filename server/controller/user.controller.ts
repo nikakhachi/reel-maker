@@ -19,7 +19,8 @@ import { downloadS3FolderAsZip } from "../aws";
 import { RequestUserType } from "../types";
 import { getVideoDurationInSeconds } from "get-video-duration";
 import { getUserSubscriptionPlan } from "../services/stripe.service";
-import { TRANSRIPTION_SECONDS_FOR_FREE_PLAN } from "../constants";
+import { FREE_TRIAL_DURAITON_IN_DAYS, TRANSRIPTION_SECONDS_FOR_FREE_TRIAL } from "../constants";
+import moment from "moment";
 
 export const validateUserController = async (req: Request, res: Response) => {
   logger.debug("Send Credentials For User Validation");
@@ -52,6 +53,10 @@ export const startVideoProcessingController = async (req: Request, res: Response
     await prisma.user.update({ where: { id: user.id }, data: { isProcessing: false } });
     callback();
   };
+  const userSubscriptionData = await getUserSubscriptionPlan(user.stripeId);
+  if (!userSubscriptionData && moment(user.createdAt).add(FREE_TRIAL_DURAITON_IN_DAYS, "days").isBefore(moment(new Date()))) {
+    return sendError(() => new BadRequestException(res, "Your Free trial has ended"));
+  }
   await prisma.user.update({ where: { id: user.id }, data: { isProcessing: true } });
   const existingYoutubeVideoInDb = await prisma.youtubeVideo.findFirst({
     where: { videoId, userId: user.id },
@@ -64,9 +69,8 @@ export const startVideoProcessingController = async (req: Request, res: Response
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
     videoDuration = await getVideoDurationInSeconds(mp4Link);
-    const userSubscriptionData = await getUserSubscriptionPlan(user.stripeId);
     const transcriptSecondsLeft =
-      (userSubscriptionData?.transcriptionSeconds || TRANSRIPTION_SECONDS_FOR_FREE_PLAN) - user.secondsTranscripted;
+      (userSubscriptionData?.transcriptionSeconds || TRANSRIPTION_SECONDS_FOR_FREE_TRIAL) - user.secondsTranscripted;
     if (transcriptSecondsLeft < Math.round(videoDuration))
       return sendError(
         () =>

@@ -53,6 +53,7 @@
     "express-session": "^1.17.2",
     "get-video-duration": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.4",
     "node-cache": "^5.1.2",
     "s3-zip": "^3.2.1",
     "stripe": "^9.13.0",
