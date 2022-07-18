@@ -9,6 +9,7 @@ import SlowMotionVideoIcon from "@mui/icons-material/SlowMotionVideo";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import { minHeight } from "@mui/system";
 
 const navigation = [
   {
@@ -70,7 +71,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
       </div>
       <div className={styles.container2}>
         <div className={styles.appBar}>
-          <p className={styles.title}>Your YouTube Videos</p>
+          <p className={styles.title}></p>
           <div className={styles.appBarUser}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <p className={styles.username}>{userContext?.user?.username}</p>
@@ -99,7 +100,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
             </Menu>
           </div>
         </div>
-        {children}
+        <div style={{ position: "relative", minHeight: "50vh" }}>{children}</div>
       </div>
     </div>
   );

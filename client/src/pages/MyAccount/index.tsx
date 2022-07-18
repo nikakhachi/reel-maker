@@ -10,6 +10,7 @@ import styles from "./styles.module.css";
 import { useUserProvider } from "../../hooks/useUserProvider";
 import { useSubscriptionsProvider } from "../../hooks/useSubscriptionsProvider";
 import { TRANSRIPTION_SECONDS_FOR_FREE_TRIAL } from "../../constants";
+import Loader from "../../components/Loader";
 
 const MyAccount = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -17,7 +18,8 @@ const MyAccount = () => {
   const user = userContext?.user;
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUserUpdateLoading, setIsUserUpdateLoading] = useState(false);
+  const [isSubscriptionChangeLoading, setIsSubscriptionChangeLoading] = useState(false);
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -41,10 +43,10 @@ const MyAccount = () => {
     }
   }, [userProvider.data]);
 
-  if (!user || userProvider.loading)
+  if (!user || userProvider.loading || isSubscriptionChangeLoading)
     return (
       <div style={{ padding: "1rem" }}>
-        <CircularProgress />
+        <Loader />
       </div>
     );
 
@@ -53,20 +55,20 @@ const MyAccount = () => {
     if (!validateEmail(email)) return snackbarContext?.openSnackbar("Invalid Email", "error");
     if (changePassword && (!newPassword || !newPasswordConfirm)) return snackbarContext?.openSnackbar("Fill all fields", "error");
     if (changePassword && newPassword !== newPasswordConfirm) return snackbarContext?.openSnackbar("Passwords do not match", "error");
-    setIsLoading(true);
+    setIsUserUpdateLoading(true);
     try {
       const { data } = await api.post(`/v1/user/update-account`, { email, username, currentPassword, newPassword });
       if (!changePassword) {
         userContext?.setUser(data);
         snackbarContext?.openSnackbar("Account has been updated Succesfully", "success");
-        setIsLoading(false);
+        setIsUserUpdateLoading(false);
       } else {
         snackbarContext?.openSnackbar("Account has been updated Succesfully, Please login with new password", "success");
-        setIsLoading(false);
+        setIsUserUpdateLoading(false);
         navigate("/login");
       }
     } catch (error: any) {
-      setIsLoading(false);
+      setIsUserUpdateLoading(false);
       return snackbarContext?.openSnackbar(error?.response?.data?.message || "Error", "error");
     }
   };
@@ -75,6 +77,7 @@ const MyAccount = () => {
     if (user.subscriptionData) {
       return snackbarContext?.openSnackbar("Please cancel your subscription first", "error");
     }
+    setIsSubscriptionChangeLoading(true);
     const { data } = await api.post("/v1/subscription/upgrade", { subscriptionId, priceId });
     const link = document.createElement("a");
     link.href = data.url;
@@ -84,6 +87,7 @@ const MyAccount = () => {
 
   const handleSubscriptionCancel = async () => {
     if (window.confirm("Cancel subscription ?")) {
+      setIsSubscriptionChangeLoading(true);
       await api.post(`/v1/subscription/cancel`, {});
       window.location.reload();
     }
@@ -125,7 +129,7 @@ const MyAccount = () => {
         <Grid container item xs={5} gap={2}>
           <Grid item xs={12}>
             <TextField
-              disabled={isLoading}
+              disabled={isUserUpdateLoading}
               type="email"
               size="small"
               fullWidth
@@ -137,7 +141,7 @@ const MyAccount = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              disabled={isLoading}
+              disabled={isUserUpdateLoading}
               size="small"
               fullWidth
               value={username}
@@ -147,13 +151,13 @@ const MyAccount = () => {
             />
           </Grid>
           <Grid display="flex" alignItems="center" item xs={12}>
-            <Checkbox disabled={isLoading} checked={changePassword} onClick={() => setChangePassword((b) => !b)} size="small" />
+            <Checkbox disabled={isUserUpdateLoading} checked={changePassword} onClick={() => setChangePassword((b) => !b)} size="small" />
             <Typography>Change Password</Typography>
           </Grid>
           {(isEmailChanged || isUsernameChanged || changePassword) && (
             <Grid item xs={12}>
               <TextField
-                disabled={isLoading}
+                disabled={isUserUpdateLoading}
                 type="password"
                 label="Current Password"
                 size="small"
@@ -168,7 +172,7 @@ const MyAccount = () => {
             <>
               <Grid item xs={12}>
                 <TextField
-                  disabled={isLoading}
+                  disabled={isUserUpdateLoading}
                   size="small"
                   fullWidth
                   value={newPassword}
@@ -180,7 +184,7 @@ const MyAccount = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  disabled={isLoading}
+                  disabled={isUserUpdateLoading}
                   size="small"
                   fullWidth
                   value={newPasswordConfirm}
@@ -194,8 +198,8 @@ const MyAccount = () => {
           )}
           {(isEmailChanged || isUsernameChanged || changePassword) && (
             <Grid item xs={4}>
-              <Button disabled={isLoading} onClick={handleUpdate} fullWidth variant="contained">
-                {isLoading ? <CircularProgress size="1.4rem" /> : "Update"}
+              <Button disabled={isUserUpdateLoading} onClick={handleUpdate} fullWidth variant="contained">
+                {isUserUpdateLoading ? <CircularProgress size="1.4rem" /> : "Update"}
               </Button>
             </Grid>
           )}

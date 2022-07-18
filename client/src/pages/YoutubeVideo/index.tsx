@@ -1,7 +1,8 @@
-import { Button, CircularProgress } from "@mui/material";
+import { Button } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_ENDPOINT } from "../../api";
+import Loader from "../../components/Loader";
 import VideoSection from "../../components/VideoSection";
 import { UserContext } from "../../context/UserContext";
 import { ProcessedVideoType, useProcessedVideosProvider } from "../../hooks/useProcessedVideosProvider";
@@ -42,7 +43,7 @@ const YoutubeVideo = () => {
   return (
     <div style={{ padding: "1rem" }}>
       {!processedVideos ? (
-        <CircularProgress />
+        <Loader />
       ) : (
         <>
           <div className={styles.header}>

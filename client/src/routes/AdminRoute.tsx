@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
 import { api } from "../api";
 import { UserContext } from "../context/UserContext";
 import AdminLayout from "../layout/admin";
+import Loader from "../components/Loader";
 
 const AdminRoute = () => {
   const userContext = useContext(UserContext);
@@ -26,7 +26,7 @@ const AdminRoute = () => {
   }, []);
 
   return isLoading ? (
-    <CircularProgress />
+    <Loader />
   ) : isAuthorized ? (
     <AdminLayout>
       <Outlet />

@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { CircularProgress, Grid, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { useYoutubeVideosProvider, YoutubeVideoType } from "../../hooks/useYoutubeVideosProvider";
 import VideoSection from "../../components/VideoSection";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import styles from "./styles.module.css";
 import { UserContext } from "../../context/UserContext";
+import Loader from "../../components/Loader";
 
 const Dashboard = () => {
   const userContext = useContext(UserContext);
@@ -31,7 +32,7 @@ const Dashboard = () => {
   return (
     <div style={{ padding: "1rem" }}>
       {!youtubeVideos ? (
-        <CircularProgress />
+        <Loader />
       ) : (
         <>
           <div className={styles.header}>
