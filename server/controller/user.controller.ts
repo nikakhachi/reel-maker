@@ -19,6 +19,7 @@ import { downloadS3FolderAsZip } from "../aws";
 import { RequestUserType } from "../types";
 import { getVideoDurationInSeconds } from "get-video-duration";
 import { getUserSubscriptionPlan } from "../services/stripe.service";
+import { TRANSRIPTION_SECONDS_FOR_FREE_PLAN } from "../constants";
 
 export const validateUserController = async (req: Request, res: Response) => {
   logger.debug("Send Credentials For User Validation");
@@ -29,6 +30,7 @@ export const validateUserController = async (req: Request, res: Response) => {
   new SuccessResponse(res, {
     email: user.email,
     username: user.username,
+    secondsTranscripted: user.secondsTranscripted,
     subscriptionData,
   });
 };
@@ -62,12 +64,14 @@ export const startVideoProcessingController = async (req: Request, res: Response
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
     videoDuration = await getVideoDurationInSeconds(mp4Link);
-    // const transcriptSecondsLeft = user.subscription.transcriptionSeconds - user.secondsTranscripted;
-    // if (transcriptSecondsLeft < Math.round(videoDuration))
-    //   return sendError(
-    //     () =>
-    //       new ForbiddenException(res, `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`)
-    //   );
+    const userSubscriptionData = await getUserSubscriptionPlan(user.stripeId);
+    const transcriptSecondsLeft =
+      (userSubscriptionData?.transcriptionSeconds || TRANSRIPTION_SECONDS_FOR_FREE_PLAN) - user.secondsTranscripted;
+    if (transcriptSecondsLeft < Math.round(videoDuration))
+      return sendError(
+        () =>
+          new ForbiddenException(res, `Can not process this video. You have only ${transcriptSecondsLeft} transcription seconds available.`)
+      );
   } catch (error: any) {
     if (error.status === "fail") {
       logger.error(error.msg);

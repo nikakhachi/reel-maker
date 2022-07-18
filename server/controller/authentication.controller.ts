@@ -21,6 +21,7 @@ export const signInController = async (req: Request, res: Response) => {
   setRefreshTokenCookie(res, refreshToken);
   new SuccessResponse(res, {
     email: user.email,
+    secondsTranscripted: user.secondsTranscripted,
     username: user.username,
     subscriptionData,
   });
@@ -48,6 +49,7 @@ export const registerController = async (req: Request, res: Response) => {
   new SuccessResponse(res, {
     email: createdUser.email,
     username: createdUser.username,
+    secondsTranscripted: createdUser.secondsTranscripted,
     subscriptionData: null,
   });
 };

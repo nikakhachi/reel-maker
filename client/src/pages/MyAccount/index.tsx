@@ -80,13 +80,18 @@ const MyAccount = () => {
 
   return (
     <div style={{ padding: "1rem" }}>
-      {/* <Typography variant="h6">Subscription : {user.subscription.title} Plan</Typography>
-      <Typography variant="h6">
-        Active Until :{" "}
-        {moment(user.subscriptionActivationDate).add(user.subscription.durationInDays, "days").format("MMM DD, YYYY hh:mm A")}
-      </Typography>
-      <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
-      <Typography variant="h6">Transcription Seconds Left : {user.subscription.transcriptionSeconds - user.secondsTranscripted}</Typography> */}
+      {!user.subscriptionData ? (
+        <p>Not Subscribed</p>
+      ) : (
+        <>
+          <Typography variant="h6">Subscription : {user.subscriptionData.name} Plan</Typography>
+          <Typography variant="h6">Active Until : {moment(user.subscriptionData.endsAt).format("MMM DD, YYYY hh:mm A")}</Typography>
+          <Typography variant="h6">Seconds Transcripted : {user.secondsTranscripted}</Typography>
+          <Typography variant="h6">
+            Transcription Seconds Left : {user.subscriptionData.transcriptionSeconds - user.secondsTranscripted}
+          </Typography>
+        </>
+      )}
       <Grid container gap={3} marginTop={5}>
         <Grid container item xs={5} gap={2}>
           <Grid item xs={12}>

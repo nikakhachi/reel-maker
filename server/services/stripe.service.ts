@@ -8,6 +8,7 @@ export type UserSubscriptionType = {
   transcriptionSeconds: number;
   activatedAt: Date;
   endsAt: Date;
+  name: string;
 };
 
 export const stripe = new Stripe(process.env.STRIPE_KEY || "", { apiVersion: "2020-08-27" });
@@ -27,6 +28,7 @@ export const getUserSubscriptionPlan = async (userStripeId: string) => {
     transcriptionSeconds: Number(subscriptionPlan.metadata.transcriptionSeconds),
     activatedAt: new Date(subscription.current_period_start * 1000),
     endsAt: new Date(subscription.current_period_end * 1000),
+    name: subscriptionPlan.metadata.name,
   };
   return subscriptionData;
 };
