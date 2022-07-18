@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { downloadFromLinks } from "../../utils/downloadFromLinks";
 import InfoIcon from "@mui/icons-material/Info";
 import { api, API_ENDPOINT } from "../../api";
+import { CLOUDFRONT_URL } from "../../constants";
 interface IProps {
   youtubeVideos?: YoutubeVideoType[];
   clipVideos?: ClipVideoType[];
@@ -81,7 +82,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
             {clipVideos.map((clip) => (
               <div key={clip.videoUrl} style={isExpanded ? {} : { display: "none" }}>
                 <Card key={clip.videoUrl} sx={{ maxWidth: 345, border: "1px solid lightgrey" }}>
-                  <video width="100%" src={`https://duypt6g4fe8mq.cloudfront.net/${clip.videoUrl}`} />
+                  <video width="100%" src={`${CLOUDFRONT_URL}/${clip.videoUrl}`} />
                   <CardContent sx={{ minHeight: 180 }}>
                     <Typography gutterBottom variant="h6" component="div">
                       {clip.gist}
@@ -93,12 +94,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                   <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Button
                       variant="outlined"
-                      onClick={() =>
-                        downloadFromLinks([
-                          `https://duypt6g4fe8mq.cloudfront.net/${clip.videoUrl}`,
-                          `https://duypt6g4fe8mq.cloudfront.net/${clip.subtitlesUrl}`,
-                        ])
-                      }
+                      onClick={() => downloadFromLinks([`${CLOUDFRONT_URL}/${clip.videoUrl}`, `${CLOUDFRONT_URL}/${clip.subtitlesUrl}`])}
                       size="small"
                     >
                       Download
@@ -122,7 +118,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
             {shortVideos.map((short) => (
               <div key={short.videoUrl} style={isExpanded ? {} : { display: "none" }}>
                 <Card key={short.videoUrl} sx={{ maxWidth: 345, border: "1px solid lightgrey" }}>
-                  <video width="100%" src={`https://duypt6g4fe8mq.cloudfront.net/${short.videoUrl}`} />
+                  <video width="100%" src={`${CLOUDFRONT_URL}/${short.videoUrl}`} />
                   <CardContent sx={{ minHeight: 300 }}>
                     <Typography gutterBottom variant="h6" component="div">
                       {short.label
@@ -138,12 +134,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                   <CardActions>
                     <Button
                       variant="outlined"
-                      onClick={() =>
-                        downloadFromLinks([
-                          `https://duypt6g4fe8mq.cloudfront.net/${short.videoUrl}`,
-                          `https://duypt6g4fe8mq.cloudfront.net/${short.subtitlesUrl}`,
-                        ])
-                      }
+                      onClick={() => downloadFromLinks([`${CLOUDFRONT_URL}/${short.videoUrl}`, `${CLOUDFRONT_URL}/${short.subtitlesUrl}`])}
                       size="small"
                     >
                       Download
