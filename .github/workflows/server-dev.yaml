@@ -6,7 +6,7 @@ on:
       - 'dev'
     paths:
       - 'server/**'
-      - '.github/workflows/**'
+      - '.github/workflows/server-dev.yaml*'
     
 env:
   AWS_REGION: eu-west-1                   # set this to your preferred AWS region, e.g. us-west-1
