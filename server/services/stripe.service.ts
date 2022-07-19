@@ -19,8 +19,8 @@ export const subscribeToPlan = async (customerId: string, priceId: string) => {
     mode: "subscription",
     customer: customerId,
     subscription_data: { items: [{ plan: priceId }] },
-    success_url: "http://localhost:3000/dashboard/my-account",
-    cancel_url: "http://localhost:3000/dashboard/my-account",
+    success_url: `${process.env.CLIENT_URL}/dashboard/my-account`,
+    cancel_url: `${process.env.CLIENT_URL}/dashboard/my-account`,
   });
   return response;
 };
