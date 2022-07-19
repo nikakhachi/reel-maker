@@ -44,10 +44,13 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
+        SERVER_DEV_ENV: ${{ secrets.SERVER_DEV_ENV }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
+        touch server/.env
+        echo "$SERVER_DEV_ENV" > server/.env
         cd server
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
