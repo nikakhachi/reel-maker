@@ -1,6 +1,6 @@
 import { Button, CircularProgress, TextField } from "@mui/material";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
 import validator from "validator";
@@ -92,9 +92,12 @@ const Register = () => {
           <Button disabled={isLoading} fullWidth onClick={handleRegister} variant="contained">
             {isLoading ? <CircularProgress color="inherit" size="1.6rem" /> : "Register"}
           </Button>
-          <Button disabled={isLoading} fullWidth onClick={() => navigate("/login")} variant="contained">
-            Sign In
-          </Button>
+          <p>
+            Have an account ?{" "}
+            <Link className={styles.link} to="/login">
+              Sign in here.
+            </Link>
+          </p>
         </div>
       </div>
     </div>

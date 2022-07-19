@@ -38,19 +38,19 @@ const Login = () => {
           <img src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" />
         </div>
         <p className={styles.title}>Sign in to your account</p>
-        <p className={styles.titleSecondary}>
+        {/* <p className={styles.titleSecondary}>
           Or{" "}
           <a className={styles.freeTrialLink} href="#">
             start your 14-day free trial
           </a>
-        </p>
-        <p className={styles.inputLabel}>Sign in with</p>
+        </p> */}
+        {/* <p className={styles.inputLabel}>Sign in with</p>
         <div className={styles.socialContainer}>
           <div className={styles.socialItem}>
             <GoogleIcon />
           </div>
         </div>
-        <p className={styles.orContinue}>Or continue with</p>
+        <p className={styles.orContinue}>Or continue with</p> */}
         <p className={styles.inputLabel}>Username</p>
         <div className={styles.inputDiv}>
           <TextField
@@ -74,22 +74,22 @@ const Login = () => {
             variant="outlined"
           />
         </div>
-        <div className={styles.optionsDiv}>
-          <div>
-            <Checkbox disabled={isLoading} size="small" defaultChecked />
-            <p>Remember Me</p>
-          </div>
-          <Link className={styles.forgotPassword} to="/forgot-password">
-            Forgot your password?
-          </Link>
-        </div>
         <div className={styles.buttonDiv}>
           <Button disabled={isLoading} fullWidth onClick={handleLogin} variant="contained">
             {isLoading ? <CircularProgress color="inherit" size="1.6rem" /> : "Sign in"}
           </Button>
-          <Button disabled={isLoading} fullWidth onClick={() => navigate("/register")} variant="contained">
+          <Link className={styles.link} to="/forgot-password">
+            Forgot your password?
+          </Link>
+          <p>
+            Don't have an account ?{" "}
+            <Link className={styles.link} to="/register">
+              Register here.
+            </Link>
+          </p>
+          {/* <Button disabled={isLoading} fullWidth onClick={() => navigate("/register")} variant="contained">
             Register
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>
