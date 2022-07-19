@@ -1,9 +1,9 @@
-import { Button, Checkbox, CircularProgress, Grid, TextField, Typography } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
-import { validateEmail } from "../../utils/validateEmail";
+import validator from "validator";
 import styles from "./styles.module.css";
 
 const Register = () => {
@@ -19,7 +19,7 @@ const Register = () => {
 
   const handleRegister = async () => {
     if (!username || !password || !email) return snackbarContext?.openSnackbar("Fields are missing", "error");
-    if (!validateEmail(email)) return snackbarContext?.openSnackbar("Invaild Email", "error");
+    if (!validator.isEmail(email)) return snackbarContext?.openSnackbar("Invaild Email", "error");
     if (password !== passwordConfirm) return snackbarContext?.openSnackbar("Passwords Do not match", "error");
     setIsLoading(true);
     try {

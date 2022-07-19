@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { SnackbarContext } from "../../context/SnackbarContext";
 import { UserContext } from "../../context/UserContext";
-import { validateEmail } from "../../utils/validateEmail";
 import moment from "moment";
 import styles from "./styles.module.css";
 import { useUserProvider } from "../../hooks/useUserProvider";
 import { useSubscriptionsProvider } from "../../hooks/useSubscriptionsProvider";
 import { TRANSRIPTION_SECONDS_FOR_FREE_TRIAL } from "../../constants";
+import validator from "validator";
 import Loader from "../../components/Loader";
 
 const MyAccount = () => {
@@ -52,7 +52,7 @@ const MyAccount = () => {
 
   const handleUpdate = async () => {
     if (!email || !username || !currentPassword) return snackbarContext?.openSnackbar("Fill all fields", "error");
-    if (!validateEmail(email)) return snackbarContext?.openSnackbar("Invalid Email", "error");
+    if (!validator.isEmail(email)) return snackbarContext?.openSnackbar("Invalid Email", "error");
     if (changePassword && (!newPassword || !newPasswordConfirm)) return snackbarContext?.openSnackbar("Fill all fields", "error");
     if (changePassword && newPassword !== newPasswordConfirm) return snackbarContext?.openSnackbar("Passwords do not match", "error");
     setIsUserUpdateLoading(true);
