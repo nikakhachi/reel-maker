@@ -2,13 +2,14 @@ import { Response } from "express";
 import logger from "./logger";
 
 export class BaseResponse {
-  static run(res: Response, body: unknown, status: number) {
+  static run(res: Response, body: unknown, status: number, log = true) {
     const isError = String(status)[0] !== "2";
     const isBodyString = typeof body === "string";
     const clientIp = res.req.socket.remoteAddress || res.req.ip;
-    logger[isError ? "error" : "info"](
-      `${res.req.originalUrl} - ${isBodyString ? body : "Payload Sent"} - STATUS ${status} | CLIENT ${clientIp}`
-    );
+    if (log)
+      logger[isError ? "error" : "info"](
+        `${res.req.originalUrl} - ${isBodyString ? body : "Payload Sent"} - STATUS ${status} | CLIENT ${clientIp}`
+      );
     res.status(status).json({
       path: res.req.originalUrl,
       status,
@@ -18,9 +19,9 @@ export class BaseResponse {
 }
 
 export class SuccessResponse extends BaseResponse {
-  constructor(res: Response, body: unknown = "OK", status = 200) {
+  constructor(res: Response, body: unknown = "OK", status = 200, log = true) {
     super();
-    BaseResponse.run(res, body, status);
+    BaseResponse.run(res, body, status, log);
   }
 }
 

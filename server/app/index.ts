@@ -34,7 +34,7 @@ app.use(
   })
 );
 
-app.get("/api/healthcheck", (req: Request, res: Response) => new SuccessResponse(res));
+app.get("/api/healthcheck", (req: Request, res: Response) => new SuccessResponse(res, "OK", 200, false));
 
 app.use("/api", routes);
 
