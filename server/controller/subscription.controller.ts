@@ -11,7 +11,10 @@ import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
 
 export const getAllAvailableSubscriptionsController = async (req: Request, res: Response) => {
   const subscriptionPlans = await getAllSubscriptionPlans();
-  new SuccessResponse(res, subscriptionPlans);
+  new SuccessResponse(
+    res,
+    subscriptionPlans.sort((a, b) => (a.priceInCents || 0) - (b.priceInCents || 0))
+  );
 };
 
 export const changeSubscriptionController = async (req: Request, res: Response) => {
