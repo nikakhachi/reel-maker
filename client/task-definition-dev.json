@@ -1,5 +1,4 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/client-dev-task:1",
     "containerDefinitions": [
         {
             "name": "client-dev",
@@ -8,7 +7,7 @@
             "memoryReservation": 256,
             "portMappings": [
                 {
-                    "containerPort": 8080,
+                    "containerPort": 80,
                     "hostPort": 0,
                     "protocol": "tcp"
                 }
@@ -17,7 +16,7 @@
             "environment": [
                 {
                     "name": "PORT",
-                    "value": "8080"
+                    "value": "80"
                 }
             ],
             "mountPoints": [],
@@ -52,10 +51,7 @@
         }
     ],
     "placementConstraints": [],
-    "compatibilities": [
-        "EXTERNAL",
-        "EC2"
-    ],
+   
     "requiresCompatibilities": [],
     "registeredAt": "2021-12-03T12:59:33.260000+04:00",
     "registeredBy": "arn:aws:iam::037049504876:user/rati"
