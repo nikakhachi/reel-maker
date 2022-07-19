@@ -39,29 +39,21 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
     
-    - name: print secrets
-      run: |
-          echo $PROCESSOR_DEV_ENV >> processor/.env
-          cat processor/.env
-      shell: bash
-      env:
-        PROCESSOR_DEV_ENV : ${{ secrets.PROCESSOR_DEV_ENV }}
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2
-      with:
-       name: PROCESSOR_DEV_ENV
-       path: processor/.env
-
+    
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
+        PROCESSOR_DEV_ENV: ${{ secrets.PROCESSOR_DEV_ENV }}
+        
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
+        'echo "PROCESSOR_DEV_ENV" > processor/.env
         cd processor
+        cat .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
