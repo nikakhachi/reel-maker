@@ -13,7 +13,11 @@ import { NotFoundException, SuccessResponse } from "./utils/httpResponses";
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5000", "https://api-dev.ig-helper-tool.store", "https://api.ig-helper-tool.store"],
+  })
+);
 
 app.get("/api/healthcheck", (req: Request, res: Response) => new SuccessResponse(res));
 
