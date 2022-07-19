@@ -1,6 +1,12 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { prisma } from "../prisma";
-import { cancelSubscription, getAllSubscriptionPlans, getUserSubscriptionPlan, subscribeToPlan } from "../services/stripe.service";
+import {
+  cancelSubscription,
+  changeSubscription,
+  getAllSubscriptionPlans,
+  getUserSubscriptionPlan,
+  subscribeToPlan,
+} from "../services/stripe.service";
 import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
 
 export const getAllAvailableSubscriptionsController = async (req: Request, res: Response) => {
@@ -8,13 +14,23 @@ export const getAllAvailableSubscriptionsController = async (req: Request, res: 
   new SuccessResponse(res, subscriptionPlans);
 };
 
-export const upgradeSubscriptionController = async (req: Request, res: Response) => {
+export const changeSubscriptionController = async (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const user = req.user as RequestUserType;
+  const { priceId } = req.body;
+  const userSubscriptionPlan = await getUserSubscriptionPlan(user.stripeId);
+  if (!userSubscriptionPlan) return new BadRequestException(res, "User has no subscription");
+  await changeSubscription(userSubscriptionPlan.subscriptionId, priceId);
+  new SuccessResponse(res);
+};
+
+export const makeSubscriptionController = async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const user = req.user as RequestUserType;
   const { priceId } = req.body;
   const stripeResponse = await subscribeToPlan(user.stripeId, priceId);
-  await prisma.user.update({ where: { id: user.id }, data: { secondsTranscripted: 0 } });
   new SuccessResponse(res, stripeResponse);
 };
 
@@ -25,6 +41,5 @@ export const cancelSubscriptionController = async (req: Request, res: Response) 
   const userSubscriptionPlan = await getUserSubscriptionPlan(user.stripeId);
   if (!userSubscriptionPlan) return new BadRequestException(res, "User has no subscription");
   await cancelSubscription(userSubscriptionPlan.subscriptionId);
-  await prisma.user.update({ where: { id: user.id }, data: { secondsTranscripted: 0 } });
   return new SuccessResponse(res);
 };

@@ -73,16 +73,18 @@ const MyAccount = () => {
     }
   };
 
-  const handlePlanUpgrade = async (subscriptionId: string, priceId: string) => {
-    if (user.subscriptionData) {
-      return snackbarContext?.openSnackbar("Please cancel your subscription first", "error");
-    }
+  const handlePlanUpgrade = async (priceId: string) => {
     setIsSubscriptionChangeLoading(true);
-    const { data } = await api.post("/v1/subscription/upgrade", { subscriptionId, priceId });
-    const link = document.createElement("a");
-    link.href = data.url;
-    link.click();
-    link.remove();
+    if (user.subscriptionData) {
+      await api.post("/v1/subscription/change", { priceId });
+      window.location.reload();
+    } else {
+      const { data } = await api.post("/v1/subscription/subscribe", { priceId });
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.click();
+      link.remove();
+    }
   };
 
   const handleSubscriptionCancel = async () => {
@@ -218,10 +220,10 @@ const MyAccount = () => {
                 <p className={styles.subPrice}>{subscription.priceInCents / 100}$</p>
                 <Button
                   disabled={user.subscriptionData?.priceId === subscription.priceId}
-                  onClick={() => handlePlanUpgrade(subscription.productId, subscription.priceId)}
+                  onClick={() => handlePlanUpgrade(subscription.priceId)}
                   variant="contained"
                 >
-                  Upgrade
+                  {user.subscriptionData ? "Upgrade" : "Subscribe"}
                 </Button>
               </Grid>
             ))}

@@ -7,7 +7,16 @@ import { NotFoundException, SuccessResponse } from "../utils/httpResponses";
 
 const app = express();
 
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, res, buf, encoding) => {
+      if (buf && buf.length) {
+        // @ts-ignore
+        req.rawBody = buf.toString(encoding || "utf8");
+      }
+    },
+  })
+);
 app.use(
   cors({
     credentials: true,

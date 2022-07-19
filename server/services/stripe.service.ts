@@ -62,3 +62,18 @@ export const getAllSubscriptionPlans = async () => {
 export const cancelSubscription = async (subscriptionId: string) => {
   await stripe.subscriptions.del(subscriptionId);
 };
+
+export const changeSubscription = async (subscriptionId: string, priceId: string) => {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const response = await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: false,
+    proration_behavior: "always_invoice",
+    items: [
+      {
+        id: subscription.items.data[0].id,
+        price: priceId,
+      },
+    ],
+  });
+  return response;
+};
