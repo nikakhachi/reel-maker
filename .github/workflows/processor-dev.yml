@@ -6,7 +6,7 @@ on:
       - 'dev'
     paths:
       - 'processor/**'
-      - '.github/workflows/**'
+      - '.github/workflows/processor-dev.yml'
     
 env:
   AWS_REGION: eu-west-1                   # set this to your preferred AWS region, e.g. us-west-1
@@ -51,7 +51,7 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        'echo "PROCESSOR_DEV_ENV" > processor/.env
+        'echo "$PROCESSOR_DEV_ENV" > processor/.env'
         cd processor
         cat .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
