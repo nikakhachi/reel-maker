@@ -1,14 +1,14 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/client-dev-task:1",
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/server-task:1",
     "containerDefinitions": [
         {
-            "name": "client-dev",
-            "image": "037049504876.dkr.ecr.eu-west-1.amazonaws.com/client-dev:latest",
+            "name": "server-",
+            "image": "037049504876.dkr.ecr.eu-west-1.amazonaws.com/server:latest",
             "cpu": 0,
             "memoryReservation": 256,
             "portMappings": [
                 {
-                    "containerPort": 8080,
+                    "containerPort": 5000,
                     "hostPort": 0,
                     "protocol": "tcp"
                 }
@@ -17,7 +17,7 @@
             "environment": [
                 {
                     "name": "PORT",
-                    "value": "8080"
+                    "value": "5000"
                 }
             ],
             "mountPoints": [],
@@ -25,14 +25,14 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/client-dev-task",
+                    "awslogs-group": "/ecs/server-task",
                     "awslogs-region": "eu-west-1",
                     "awslogs-stream-prefix": "ecs"
                 }
             }
         }
     ],
-    "family": "client-dev-task",
+    "family": "server-task",
     "networkMode": "bridge",
     "revision": 1,
     "volumes": [],
