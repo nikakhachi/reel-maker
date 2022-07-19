@@ -10,4 +10,9 @@ const signRefreshToken = async (userId: number) => {
   return refreshToken;
 };
 
-export { signAccessToken, signRefreshToken };
+const signResetToken = async (userId: number) => {
+  const resetToken = sign({ id: userId }, process.env.JWT_KEY || "", { expiresIn: "10m" });
+  return resetToken;
+};
+
+export { signAccessToken, signRefreshToken, signResetToken };

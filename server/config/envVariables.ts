@@ -16,6 +16,7 @@ const ENV_VARIABLES = [
   "STRIPE_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "CLIENT_URL",
+  "EMAIL_PASSWORD",
 ];
 const NODE_ENV_OPTIONS = ["development", "production", "testing"];
 

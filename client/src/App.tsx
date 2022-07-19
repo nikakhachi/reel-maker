@@ -21,7 +21,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           <Route element={<AdminRoute />}>
             <Route path="/dashboard/youtube-videos/:videoId" element={<YoutubeVideo />} />
             <Route path="/dashboard/youtube-videos" element={<Dashboard />} />

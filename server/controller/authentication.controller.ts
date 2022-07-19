@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
 import { clearCookies, setAccessTokenCookie, setRefreshTokenCookie } from "../services/cookie.service";
-import { signAccessToken, signRefreshToken } from "../services/jwt.service";
+import { signAccessToken, signRefreshToken, signResetToken } from "../services/jwt.service";
 import logger from "../utils/logger";
-import { BadRequestException, ForbiddenException, SuccessResponse } from "../utils/httpResponses";
+import { BadRequestException, ForbiddenException, InternalServerErrorException, SuccessResponse } from "../utils/httpResponses";
 import * as bcrypt from "bcrypt";
 import { prisma } from "../prisma";
 import { getUserSubscriptionPlan, stripe } from "../services/stripe.service";
 import moment from "moment";
 import { FREE_TRIAL_DURAITON_IN_DAYS } from "../constants";
+import { sendEmail } from "../utils/nodeMailer";
+import * as jwt from "jsonwebtoken";
 
 export const signInController = async (req: Request, res: Response) => {
   logger.debug("Sign In User");
@@ -61,5 +63,31 @@ export const registerController = async (req: Request, res: Response) => {
 
 export const logoutController = async (req: Request, res: Response) => {
   clearCookies(res);
+  new SuccessResponse(res);
+};
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const user = await prisma.user.findFirst({ where: { email }, select: { email: true, id: true } });
+  if (user) {
+    const resetToken = await signResetToken(user.id);
+    await sendEmail({
+      to: email,
+      subject: "Password Reset",
+      html: `<p>Go to following link to reset your password. Token will be active for 10 minutes only !<p><br></br><p>${process.env.CLIENT_URL}/reset-password/${resetToken}</p>`,
+    });
+  }
+  return new SuccessResponse(res, `Password reset link is sent to the provided email.`);
+};
+
+export const changePasswordController = async (req: Request, res: Response) => {
+  const { password, resetToken } = req.body;
+  const payload = jwt.decode(resetToken);
+  if (typeof payload === "string" || !payload) return new BadRequestException(res);
+  const user = await prisma.user.findFirst({ where: { id: payload.id } });
+  if (!user) return new InternalServerErrorException(res, "Internal Server Error");
+  const hashedPassword = await bcrypt.hash(password, 10);
+  clearCookies(res);
+  const updatedUser = await prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword } });
   new SuccessResponse(res);
 };
