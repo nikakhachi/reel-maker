@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/client-dev-task:1",
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/proc-task:1",
     "containerDefinitions": [
         {
-            "name": "client-dev",
-            "image": "037049504876.dkr.ecr.eu-west-1.amazonaws.com/client-dev:latest",
+            "name": "proc-",
+            "image": "037049504876.dkr.ecr.eu-west-1.amazonaws.com/proc:latest",
             "cpu": 0,
             "memoryReservation": 256,
             "portMappings": [
@@ -25,14 +25,14 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/client-dev-task",
+                    "awslogs-group": "/ecs/proc-task",
                     "awslogs-region": "eu-west-1",
                     "awslogs-stream-prefix": "ecs"
                 }
             }
         }
     ],
-    "family": "client-dev-task",
+    "family": "proc-task",
     "networkMode": "bridge",
     "revision": 1,
     "volumes": [],
