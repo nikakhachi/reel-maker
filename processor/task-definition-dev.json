@@ -1,5 +1,4 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/processor-dev-task:1",
     "containerDefinitions": [
         {
             "name": "processor-dev",
@@ -52,10 +51,7 @@
         }
     ],
     "placementConstraints": [],
-    "compatibilities": [
-        "EXTERNAL",
-        "EC2"
-    ],
+
     "requiresCompatibilities": [],
     "registeredAt": "2021-12-03T12:59:33.260000+04:00",
     "registeredBy": "arn:aws:iam::037049504876:user/rati"
