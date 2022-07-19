@@ -33,9 +33,9 @@ const Register = () => {
   };
   return (
     <div className={styles.container}>
-      <div className={styles.imageDiv}>
+      {/* <div className={styles.imageDiv}>
         <img src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" />
-      </div>
+      </div> */}
       <div className={styles.formContainer}>
         <div className={styles.logoDiv}>
           <img src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" />
