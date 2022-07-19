@@ -57,7 +57,6 @@
     "node-cache": "^5.1.2",
     "s3-zip": "^3.2.1",
     "stripe": "^9.13.0",
-    "winston": "^3.6.0",
-    "xml-stream": "^0.4.5"
+    "winston": "^3.6.0"
   }
 }

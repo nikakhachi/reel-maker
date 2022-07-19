@@ -64,35 +64,44 @@ export const generateClipsAndItsData = async ({
 
       logger.info("trimming video");
       const outputPath = `${clipsDirectory}/${clipIndex}/video.mp4`;
-      await cutVideo(originalVideoPath, outputPath, chapter.start / 1000, clipDuration);
+      try {
+        await cutVideo(originalVideoPath, outputPath, chapter.start / 1000, clipDuration);
 
-      const newVideo: Buffer = await new Promise((res, rej) => {
-        fs.readFile(outputPath, (err, data) => {
-          if (err) return rej(err);
-          res(data);
+        const newVideo: Buffer = await new Promise((res, rej) => {
+          fs.readFile(outputPath, (err, data) => {
+            if (err) return rej(err);
+            res(data);
+          });
         });
-      });
 
-      fs.unlink(outputPath, (err) => {
-        if (err) logger.error(`Error deleting ${outputPath}`);
-      });
+        fs.unlink(outputPath, (err) => {
+          if (err) logger.error(`Error deleting ${outputPath}`);
+        });
 
-      logger.info("uploading to s3");
-      const videoS3Path = `${s3Path}/${clipGistForFolderAndFileName}.mp4`;
-      const subtitlesS3Path = `${s3Path}/${clipGistForFolderAndFileName}-subtitles.json`;
+        logger.info("uploading to s3");
+        const videoS3Path = `${s3Path}/${clipGistForFolderAndFileName}.mp4`;
+        const subtitlesS3Path = `${s3Path}/${clipGistForFolderAndFileName}-subtitles.json`;
 
-      await Promise.all([uploadToS3(videoS3Path, newVideo), uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8"))]);
+        await Promise.all([
+          uploadToS3(videoS3Path, newVideo),
+          uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8")),
+        ]);
 
-      processedVideos.clips.push({
-        videoUrl: videoS3Path,
-        subtitlesUrl: subtitlesS3Path,
-        gist: chapter.gist,
-        summary: chapter.summary,
-        headline: chapter.headline,
-      });
+        processedVideos.clips.push({
+          videoUrl: videoS3Path,
+          subtitlesUrl: subtitlesS3Path,
+          gist: chapter.gist,
+          summary: chapter.summary,
+          headline: chapter.headline,
+        });
 
-      clipIndex++;
-      logger.info(`Clip ${chapter.gist} has generated`);
+        logger.info(`Clip ${chapter.gist} has generated`);
+      } catch (error) {
+        console.log(error);
+        logger.error(`Clip ${chapter.gist} has errored.`);
+      } finally {
+        clipIndex++;
+      }
     } else {
       logger.info(`Clip \`${chapter.gist}\` is more than 2/3 of original video, skipping`);
     }
@@ -122,33 +131,42 @@ export const generateClipsAndItsData = async ({
 
       logger.info("trimming video");
       const outputPath = `${shortsDirectory}/${iabIndex}/video.mp4`;
-      await cutVideo(originalVideoPath, outputPath, iab.timestamp.start / 1000, iab.timestamp.end / 1000 - iab.timestamp.start / 1000);
+      try {
+        await cutVideo(originalVideoPath, outputPath, iab.timestamp.start / 1000, iab.timestamp.end / 1000 - iab.timestamp.start / 1000);
 
-      const newVideo: Buffer = await new Promise((res, rej) => {
-        fs.readFile(outputPath, (err, data) => {
-          if (err) return rej(err);
-          res(data);
+        const newVideo: Buffer = await new Promise((res, rej) => {
+          fs.readFile(outputPath, (err, data) => {
+            if (err) return rej(err);
+            res(data);
+          });
         });
-      });
 
-      fs.unlink(outputPath, (err) => {
-        if (err) logger.error(`Error deleting ${outputPath}`);
-      });
+        fs.unlink(outputPath, (err) => {
+          if (err) logger.error(`Error deleting ${outputPath}`);
+        });
 
-      logger.info("uploading to s3");
-      const videoS3Path = `${s3Path}/${iabLabelForFileAndFolderName}.mp4`;
-      const subtitlesS3Path = `${s3Path}/${iabLabelForFileAndFolderName}-subtitles.json`;
+        logger.info("uploading to s3");
+        const videoS3Path = `${s3Path}/${iabLabelForFileAndFolderName}.mp4`;
+        const subtitlesS3Path = `${s3Path}/${iabLabelForFileAndFolderName}-subtitles.json`;
 
-      await Promise.all([uploadToS3(videoS3Path, newVideo), uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8"))]);
-      processedVideos.shorts.push({
-        videoUrl: videoS3Path,
-        subtitlesUrl: subtitlesS3Path,
-        text: iab.text,
-        label: iabLabel,
-      });
+        await Promise.all([
+          uploadToS3(videoS3Path, newVideo),
+          uploadToS3(subtitlesS3Path, Buffer.from(JSON.stringify(subtitles), "utf-8")),
+        ]);
+        processedVideos.shorts.push({
+          videoUrl: videoS3Path,
+          subtitlesUrl: subtitlesS3Path,
+          text: iab.text,
+          label: iabLabel,
+        });
 
-      iabIndex++;
-      logger.info(`short '${iabLabel}' has generated`);
+        logger.info(`short '${iabLabel}' has generated`);
+      } catch (error) {
+        console.log(error);
+        logger.error(`Short ${iabLabel} has errored.`);
+      } finally {
+        iabIndex++;
+      }
     }
   } else {
     logger.error(`iab categories status is ${nlpData.iab_categories_result.status}`);

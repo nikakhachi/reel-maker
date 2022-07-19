@@ -14,6 +14,8 @@ const ENV_VARIABLES = [
   "AWS_REGION",
   "AWS_S3_BUCKET_NAME",
   "STRIPE_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "CLIENT_URL",
 ];
 const NODE_ENV_OPTIONS = ["development", "production", "testing"];
 

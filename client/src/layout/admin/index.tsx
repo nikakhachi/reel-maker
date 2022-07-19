@@ -9,7 +9,6 @@ import SlowMotionVideoIcon from "@mui/icons-material/SlowMotionVideo";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
-import { minHeight } from "@mui/system";
 
 const navigation = [
   {
@@ -49,6 +48,14 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     navigate("/");
   };
 
+  const getHeaderTitle = () => {
+    const path = window.location.pathname;
+    if (path.includes("/dashboard/generate")) return "Generate Youtube Video";
+    if (path.includes("/dashboard/my-account")) return "My Account";
+    if (/\/dashboard\/youtube-videos(\/)?$/.test(path)) return "Your Youtube Videos";
+    return "Your Generated Video";
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.sideBar}>
@@ -71,7 +78,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
       </div>
       <div className={styles.container2}>
         <div className={styles.appBar}>
-          <p className={styles.title}></p>
+          <p className={styles.title}>{getHeaderTitle()}</p>
           <div className={styles.appBarUser}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <p className={styles.username}>{userContext?.user?.username}</p>

@@ -19,8 +19,8 @@ export const subscribeToPlan = async (customerId: string, priceId: string) => {
     mode: "subscription",
     customer: customerId,
     subscription_data: { items: [{ plan: priceId }] },
-    success_url: "http://localhost:3000/dashboard/my-account",
-    cancel_url: "http://localhost:3000/dashboard/my-account",
+    success_url: `${process.env.CLIENT_URL}/dashboard/my-account`,
+    cancel_url: `${process.env.CLIENT_URL}/dashboard/my-account`,
   });
   return response;
 };
@@ -61,4 +61,19 @@ export const getAllSubscriptionPlans = async () => {
 
 export const cancelSubscription = async (subscriptionId: string) => {
   await stripe.subscriptions.del(subscriptionId);
+};
+
+export const changeSubscription = async (subscriptionId: string, priceId: string) => {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const response = await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: false,
+    proration_behavior: "always_invoice",
+    items: [
+      {
+        id: subscription.items.data[0].id,
+        price: priceId,
+      },
+    ],
+  });
+  return response;
 };

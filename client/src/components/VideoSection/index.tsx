@@ -38,35 +38,27 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                     allow="autoPlay"
                     height="140"
                   />
-                  <CardContent>
-                    {title === "Generated" && (
-                      <>
-                        <Typography variant="body2" color="text.secondary">
-                          {youtubeVideo._count.clips} Clips | {youtubeVideo._count.shorts} Shorts
-                        </Typography>
-                      </>
-                    )}
-                  </CardContent>
-                  <CardActions>
-                    {title === "Generated" && (
-                      <>
-                        <Button
-                          variant="outlined"
-                          onClick={() => navigate(`/dashboard/youtube-videos/${youtubeVideo.videoId}`)}
-                          size="small"
-                        >
-                          See All Videos
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${youtubeVideo.videoId}`])}
-                        >
-                          Download All
-                        </Button>
-                      </>
-                    )}
-                  </CardActions>
+                  {title === "Generated" && (
+                    <CardContent>
+                      <Typography variant="body2" color="text.secondary">
+                        {youtubeVideo._count.clips} Clips | {youtubeVideo._count.shorts} Shorts
+                      </Typography>
+                    </CardContent>
+                  )}
+                  {title === "Generated" && (
+                    <CardActions>
+                      <Button variant="outlined" onClick={() => navigate(`/dashboard/youtube-videos/${youtubeVideo.videoId}`)} size="small">
+                        See All Videos
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${youtubeVideo.videoId}`])}
+                      >
+                        Download All
+                      </Button>
+                    </CardActions>
+                  )}
                 </Card>
               </div>
             ))}

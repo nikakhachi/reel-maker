@@ -4,7 +4,7 @@ import logger from "../utils/logger";
 type YoutubeVideoFormat = "720p" | "480p" | "360p" | "240p" | "144p";
 
 const getVideoUrlByFormat = (data: any, format: YoutubeVideoFormat) =>
-  (Object.values(data.link) as string[][]).find((item) => item[3] === "720p" && item[4].includes("video/mp4"))?.[0] as string;
+  (Object.values(data.link) as string[][]).find((item) => item[3] === format && item[4].includes("video/mp4"))?.[0] as string;
 
 const getVideoUrl = (data: any) => {
   const formats = ["720p", "480p", "360p", "240p", "144p"];

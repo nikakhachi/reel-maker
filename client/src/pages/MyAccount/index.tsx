@@ -73,16 +73,18 @@ const MyAccount = () => {
     }
   };
 
-  const handlePlanUpgrade = async (subscriptionId: string, priceId: string) => {
-    if (user.subscriptionData) {
-      return snackbarContext?.openSnackbar("Please cancel your subscription first", "error");
-    }
+  const handlePlanUpgrade = async (priceId: string) => {
     setIsSubscriptionChangeLoading(true);
-    const { data } = await api.post("/v1/subscription/upgrade", { subscriptionId, priceId });
-    const link = document.createElement("a");
-    link.href = data.url;
-    link.click();
-    link.remove();
+    if (user.subscriptionData) {
+      await api.post("/v1/subscription/change", { priceId });
+      window.location.reload();
+    } else {
+      const { data } = await api.post("/v1/subscription/subscribe", { priceId });
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.click();
+      link.remove();
+    }
   };
 
   const handleSubscriptionCancel = async () => {
@@ -210,18 +212,21 @@ const MyAccount = () => {
           <Grid container item xs={12} gap={1}>
             {subscriptionsProvider.data.map((subscription) => (
               <Grid item className={styles.subscriptionItem} xs={12} sm={12} md={5} xl={3}>
-                <p className={styles.subTitle}>
-                  {subscription.name} {user.subscriptionData?.priceId === subscription.priceId && "(Current)"}
-                </p>
-                <p className={styles.subDays}>{subscription.durationInDays} Days</p>
-                <p className={styles.subSeconds}>{subscription.transcriptionSeconds} Seconds Video Transcription</p>
-                <p className={styles.subPrice}>{subscription.priceInCents / 100}$</p>
+                <div>
+                  <p className={styles.subTitle}>
+                    {subscription.name} {user.subscriptionData?.priceId === subscription.priceId && "(Current)"}
+                  </p>
+                  <p className={styles.subPrice}>
+                    ${subscription.priceInCents / 100} <span>/ month</span>
+                  </p>
+                </div>
+                <p className={styles.subSeconds}>{subscription.transcriptionSeconds} Transcription Seconds</p>
                 <Button
                   disabled={user.subscriptionData?.priceId === subscription.priceId}
-                  onClick={() => handlePlanUpgrade(subscription.productId, subscription.priceId)}
+                  onClick={() => handlePlanUpgrade(subscription.priceId)}
                   variant="contained"
                 >
-                  Upgrade
+                  {user.subscriptionData ? "Upgrade" : "Subscribe"}
                 </Button>
               </Grid>
             ))}
