@@ -51,7 +51,8 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        'echo "$PROCESSOR_DEV_ENV" > processor/.env'
+        touch processor/.env
+        echo "$PROCESSOR_DEV_ENV" > processor/.env
         cd processor
         cat .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
