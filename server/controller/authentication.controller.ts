@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { clearCookies, setAccessTokenCookie, setRefreshTokenCookie } from "../services/cookie.service";
 import { signAccessToken, signRefreshToken } from "../services/jwt.service";
 import logger from "../utils/logger";
-import { BadRequestException, SuccessResponse } from "../utils/httpResponses";
+import { BadRequestException, ForbiddenException, SuccessResponse } from "../utils/httpResponses";
 import * as bcrypt from "bcrypt";
 import { prisma } from "../prisma";
 import { getUserSubscriptionPlan, stripe } from "../services/stripe.service";
@@ -33,6 +33,7 @@ export const signInController = async (req: Request, res: Response) => {
 export const registerController = async (req: Request, res: Response) => {
   logger.info("Register Instagram User");
   const { username, email, password } = req.body;
+  if (process.env.NODE_ENV === "testing" && !/@nathaston.com$/.test(password)) return new ForbiddenException(res);
   if (!username || !email || !password) return new BadRequestException(res, "Fields are Missing");
   const existingUser = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existingUser) return new BadRequestException(res, "User Already Exists");
