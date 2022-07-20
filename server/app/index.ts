@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import session from "express-session";
 import routes from "../routes";
 import { NotFoundException, SuccessResponse } from "../utils/httpResponses";
 
@@ -25,14 +24,6 @@ app.use(
 );
 
 app.use(cookieParser());
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
 
 app.get("/api/healthcheck", (req: Request, res: Response) => new SuccessResponse(res, "OK", 200, false));
 
