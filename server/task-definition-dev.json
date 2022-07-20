@@ -33,12 +33,13 @@
     ],
     "family": "server-dev-task",
     "networkMode": "bridge",
+    "taskRoleArn": "AWS-service-access-role",
     "volumes": [],
   
 
-    "placementConstraints": [],
+    "placementConstraints": []
  
-    "requiresCompatibilities": []
+
    
 
 }
