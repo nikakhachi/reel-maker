@@ -6,14 +6,15 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SlowMotionVideoIcon from "@mui/icons-material/SlowMotionVideo";
+import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Button, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 
 const navigation = [
   {
-    icon: <HomeIcon fontSize="large" />,
-    title: "Home",
+    icon: <YouTubeIcon fontSize="large" />,
+    title: "Videos",
     to: "/dashboard/youtube-videos",
   },
   {
