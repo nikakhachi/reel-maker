@@ -29,6 +29,10 @@ const Dashboard = () => {
     }
   }, [youtubeVideosProvider.data]);
 
+  const pendingVideos = youtubeVideos?.filter((item) => item.status.name === "Processing");
+  const failedVideos = youtubeVideos?.filter((item) => item.status.name === "Error");
+  const generatedVideos = youtubeVideos?.filter((item) => item.status.name === "Success");
+
   return (
     <div style={{ padding: "1rem" }}>
       {!youtubeVideos ? (
@@ -37,18 +41,18 @@ const Dashboard = () => {
         <>
           <div className={styles.header}>
             <IconButton
-              size="large"
+              size="small"
               onClick={() => {
                 setYoutubeVideos(null);
                 youtubeVideosProvider.refetch();
               }}
             >
-              <RefreshIcon fontSize="large" color="primary" />
+              <RefreshIcon fontSize="medium" color="primary" />
             </IconButton>
           </div>
-          <VideoSection title="Pending" youtubeVideos={youtubeVideos.filter((item) => item.status.name === "Processing")} />
-          <VideoSection title="Failed" youtubeVideos={youtubeVideos.filter((item) => item.status.name === "Error")} />
-          <VideoSection title="Generated" youtubeVideos={youtubeVideos.filter((item) => item.status.name === "Success")} />
+          {pendingVideos?.length ? <VideoSection title="Pending" youtubeVideos={pendingVideos} /> : null}
+          {failedVideos?.length ? <VideoSection title="Failed" youtubeVideos={failedVideos} /> : null}
+          <VideoSection title="Generated" youtubeVideos={generatedVideos} />
         </>
       )}
     </div>

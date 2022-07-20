@@ -6,7 +6,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SlowMotionVideoIcon from "@mui/icons-material/SlowMotionVideo";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { Button, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 
@@ -33,10 +33,10 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+  // const open = Boolean(anchorEl);
+  // const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -48,13 +48,13 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     navigate("/");
   };
 
-  const getHeaderTitle = () => {
-    const path = window.location.pathname;
-    if (path.includes("/dashboard/generate")) return "Generate Youtube Video";
-    if (path.includes("/dashboard/my-account")) return "My Account";
-    if (/\/dashboard\/youtube-videos(\/)?$/.test(path)) return "Your Youtube Videos";
-    return "Your Generated Video";
-  };
+  // const getHeaderTitle = () => {
+  //   const path = window.location.pathname;
+  //   if (path.includes("/dashboard/generate")) return "Generate Youtube Video";
+  //   if (path.includes("/dashboard/my-account")) return "My Account";
+  //   if (/\/dashboard\/youtube-videos(\/)?$/.test(path)) return "Your Youtube Videos";
+  //   return "Your Generated Video";
+  // };
 
   return (
     <div className={styles.container}>
@@ -78,13 +78,16 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
       </div>
       <div className={styles.container2}>
         <div className={styles.appBar}>
-          <p className={styles.title}>{getHeaderTitle()}</p>
+          {/* <p className={styles.title}>{getHeaderTitle()}</p>
+          <Typography sx={{ color: "white" }} variant="body2">
+            _
+          </Typography> */}
           <div className={styles.appBarUser}>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            {/* <div style={{ display: "flex", alignItems: "center" }}>
               <p className={styles.username}>{userContext?.user?.username}</p>
               <PersonOutlineIcon fontSize="large" />
-            </div>
-            <IconButton
+            </div> */}
+            {/* <IconButton
               id="basic-button"
               aria-controls={open ? "basic-menu" : undefined}
               aria-haspopup="true"
@@ -104,7 +107,10 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
             >
               <MenuItem onClick={() => navigate("/dashboard/my-account")}>My Account</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            </Menu>
+            </Menu> */}
+            <Button onClick={handleLogout} size="small" variant="outlined">
+              Logout
+            </Button>
           </div>
         </div>
         <div style={{ position: "relative", minHeight: "50vh" }}>{children}</div>

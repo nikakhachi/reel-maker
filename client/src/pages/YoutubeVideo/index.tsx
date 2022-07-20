@@ -82,13 +82,13 @@ const YoutubeVideo = () => {
             </Button>
           </div>
           <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleChange}>
-            <ToggleButton value="clips">Clips</ToggleButton>
-            <ToggleButton value="shorts">Shorts</ToggleButton>
+            <ToggleButton value="clips">Clips ({processedVideos.clips.length})</ToggleButton>
+            <ToggleButton value="shorts">Shorts ({processedVideos.shorts.length})</ToggleButton>
           </ToggleButtonGroup>
           <br />
           <br />
           <Pagination
-            count={Math.ceil(processedVideos[alignment === "clips" ? "clips" : "shorts"].length / 10)}
+            count={Math.ceil(processedVideos[alignment === "clips" ? "clips" : "shorts"].length / VIDEOS_PER_PAGE)}
             page={page}
             onChange={handlePageChange}
           />
