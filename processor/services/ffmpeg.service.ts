@@ -8,6 +8,8 @@ export const cutVideo = (inputPath: string, outputPath: string, startTime: numbe
       .setStartTime(startTime)
       .setDuration(duration)
       .output(outputPath)
+      .withVideoCodec("copy")
+      .withAudioCodec("copy")
       .on("end", function (err: any) {
         if (!err) {
           res("");
