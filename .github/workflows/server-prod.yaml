@@ -1,26 +1,26 @@
-name: Deploy to Processor Production
+name: Deploy to Server Production
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'processor/**'
-      - '.github/workflows/processor-prod.yml*'
+      - 'server/**'
+      - '.github/workflows/server-prod.yml*'
     
 env:
   AWS_REGION: eu-west-1                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: processor          # set this to your Amazon ECR repository name
-  ECS_SERVICE: processor-srv                # set this to your Amazon ECS service name
+  ECR_REPOSITORY: server          # set this to your Amazon ECR repository name
+  ECS_SERVICE: server-srv                # set this to your Amazon ECS service name
   ECS_CLUSTER: reel-maker-cluster                 # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: ./processor/task-definition.json # set this to the path to your Amazon ECS task definition
+  ECS_TASK_DEFINITION: ./server/task-definition.json # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: processor          # set this to the name of the container in the
+  CONTAINER_NAME: server          # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
 
 jobs:
   deploy:
-    name: Deploy Processor
+    name: Deploy Server
     runs-on: ubuntu-latest
     environment: production
 
@@ -45,15 +45,15 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
-        PROCESSOR_ENV: ${{ secrets.PROCESSOR_ENV }}
+        PROCESSOR_ENV: ${{ secrets.SERVER_ENV }}
         
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        touch processor/.env
-        echo "$PROCESSOR_ENV" > processor/.env
-        cd processor
+        touch server/.env
+        echo "$SERVER_ENV" > server/.env
+        cd server
         cat .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
