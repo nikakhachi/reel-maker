@@ -45,7 +45,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
-        PROCESSOR_ENV: ${{ secrets.SERVER_ENV }}
+        SERVER_ENV: ${{ secrets.SERVER_ENV }}
         
       run: |
         # Build a docker container and
