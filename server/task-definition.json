@@ -3,8 +3,8 @@
         {
             "name": "server",
             "image": "037049504876.dkr.ecr.eu-west-1.amazonaws.com/server:latest",
-            "cpu": 0,
-            "memoryReservation": 256,
+            "cpu": 1024,
+            "memoryReservation": 512,
             "portMappings": [
                 {
                     "containerPort": 5000,
