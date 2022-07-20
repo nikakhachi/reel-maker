@@ -47,8 +47,8 @@ export const getUserSubscriptionPlan = async (userStripeId: string) => {
 
 export const getAllSubscriptionPlans = async () => {
   const [productsData, plansData] = await Promise.all([stripe.products.list({}), stripe.plans.list({})]);
-  const product = productsData.data.find((item) => item.active === true);
-  const plans = plansData.data.filter((item) => item.product === product?.id);
+  const product = productsData.data.find((item) => item.active);
+  const plans = plansData.data.filter((item) => item.product === product?.id && item.active);
   return plans.map((item) => ({
     priceInCents: item.amount,
     transcriptionSeconds: Number(item.metadata?.transcriptionSeconds),

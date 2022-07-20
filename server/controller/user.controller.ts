@@ -90,7 +90,7 @@ export const startVideoProcessingController = async (req: Request, res: Response
       logger.error(error.msg);
       return sendError(() => new BadRequestException(res, error.msg));
     } else {
-      logger.error(error);
+      console.log(error);
       return sendError(() => new InternalServerErrorException(res));
     }
   }

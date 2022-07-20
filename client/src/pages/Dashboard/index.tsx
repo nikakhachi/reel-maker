@@ -1,16 +1,18 @@
 import { useContext, useEffect, useState } from "react";
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { useYoutubeVideosProvider, YoutubeVideoType } from "../../hooks/useYoutubeVideosProvider";
 import VideoSection from "../../components/VideoSection";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import styles from "./styles.module.css";
 import { UserContext } from "../../context/UserContext";
 import Loader from "../../components/Loader";
+import ProcessVideoDialog from "../../components/ProcessVideoDialog";
 
 const Dashboard = () => {
   const userContext = useContext(UserContext);
 
   const [youtubeVideos, setYoutubeVideos] = useState<null | YoutubeVideoType[]>(null);
+  const [processVideoDialogOpen, setProcessVideoDialogOpen] = useState(false);
 
   const youtubeVideosProvider = useYoutubeVideosProvider(false);
 
@@ -29,6 +31,10 @@ const Dashboard = () => {
     }
   }, [youtubeVideosProvider.data]);
 
+  const pendingVideos = youtubeVideos?.filter((item) => item.status.name === "Processing");
+  const failedVideos = youtubeVideos?.filter((item) => item.status.name === "Error");
+  const generatedVideos = youtubeVideos?.filter((item) => item.status.name === "Success");
+
   return (
     <div style={{ padding: "1rem" }}>
       {!youtubeVideos ? (
@@ -37,18 +43,31 @@ const Dashboard = () => {
         <>
           <div className={styles.header}>
             <IconButton
-              size="large"
+              size="small"
               onClick={() => {
                 setYoutubeVideos(null);
                 youtubeVideosProvider.refetch();
               }}
             >
-              <RefreshIcon fontSize="large" color="primary" />
+              <RefreshIcon fontSize="medium" color="primary" />
             </IconButton>
+            <Button onClick={() => setProcessVideoDialogOpen(true)} size="large" variant="contained">
+              Process New Video
+            </Button>
           </div>
-          <VideoSection title="Pending" youtubeVideos={youtubeVideos.filter((item) => item.status.name === "Processing")} />
-          <VideoSection title="Failed" youtubeVideos={youtubeVideos.filter((item) => item.status.name === "Error")} />
-          <VideoSection title="Generated" youtubeVideos={youtubeVideos.filter((item) => item.status.name === "Success")} />
+          {pendingVideos?.length ? <VideoSection title="Pending" youtubeVideos={pendingVideos} /> : null}
+          {failedVideos?.length ? <VideoSection title="Failed" youtubeVideos={failedVideos} /> : null}
+          <VideoSection title="Generated" youtubeVideos={generatedVideos} />
+          <ProcessVideoDialog
+            open={processVideoDialogOpen}
+            handleClose={(refetch) => {
+              setProcessVideoDialogOpen(false);
+              if (refetch) {
+                setYoutubeVideos(null);
+                youtubeVideosProvider.refetch();
+              }
+            }}
+          />
         </>
       )}
     </div>
