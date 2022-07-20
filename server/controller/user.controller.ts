@@ -69,7 +69,8 @@ export const startVideoProcessingController = async (req: Request, res: Response
   let videoDuration: undefined | number;
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
-    videoDuration = await getVideoDurationInSeconds(mp4Link);
+    // videoDuration = await getVideoDurationInSeconds(mp4Link);
+    videoDuration = 500;
     const transcriptSecondsLeft =
       (userSubscriptionData?.transcriptionSeconds || TRANSRIPTION_SECONDS_FOR_FREE_TRIAL) - user.secondsTranscripted;
     if (transcriptSecondsLeft < Math.round(videoDuration))
