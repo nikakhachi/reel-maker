@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Pagination, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Button, CircularProgress, IconButton, Pagination, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_ENDPOINT } from "../../api";
@@ -9,6 +9,7 @@ import { UserContext } from "../../context/UserContext";
 import { ProcessedVideoType, useProcessedVideosProvider } from "../../hooks/useProcessedVideosProvider";
 import { downloadFromLinks } from "../../utils/downloadFromLinks";
 import styles from "./styles.module.css";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const YoutubeVideo = () => {
   const userContext = useContext(UserContext);
@@ -76,6 +77,9 @@ const YoutubeVideo = () => {
         <>
           <div className={styles.header}>
             {/* <iframe width="300" height="150" src={`https://www.youtube.com/embed/${videoId}`} /> */}
+            <IconButton onClick={() => navigate("/dashboard/youtube-videos")}>
+              <ArrowBackIcon />
+            </IconButton>
             <Typography variant="h2">{videoId}</Typography>
             <Button onClick={handleAllDownload} variant="contained" sx={{ marginBottom: "2rem" }} disabled={areAllDownloading}>
               {areAllDownloading ? <CircularProgress size="1.5rem" /> : "Download All"}
