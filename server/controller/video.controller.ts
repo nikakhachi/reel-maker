@@ -5,6 +5,8 @@ import logger from "../utils/logger";
 
 export const videoStatusUpdateController = async (req: Request, res: Response) => {
   const { msg, youtubeVideoIdInDb, data, videoId, videoDuration } = req.body;
+  logger.info(`VideoStatusUpdateController`);
+  console.log({ msg, youtubeVideoIdInDb, data, videoId, videoDuration });
   const youtubeVideo = await prisma.youtubeVideo.findFirst({ where: { id: youtubeVideoIdInDb } });
   if (!youtubeVideo) return new BadRequestException(res);
   await prisma.user.update({ where: { id: youtubeVideo.userId }, data: { isProcessing: false } });

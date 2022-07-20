@@ -36,9 +36,9 @@
     "volumes": [],
   
 
-    "placementConstraints": [],
+    "placementConstraints": []
  
-    "requiresCompatibilities": []
+
    
 
 }
