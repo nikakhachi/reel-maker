@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 
-export const API_ENDPOINT = "https://api-dev.ig-helper-tool.store/api";
+export const API_ENDPOINT = "https://api.ig-helper-tool.store/api";
 // export const API_ENDPOINT = "http://localhost:5000/api";
 
 const getRequestConfig = (): AxiosRequestConfig => ({
