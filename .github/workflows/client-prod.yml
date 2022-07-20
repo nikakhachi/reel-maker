@@ -6,11 +6,11 @@ on:
       - 'master'
     paths:
       - 'client/**'
-      - '.github/workflows/**'
+      - '.github/workflows/client-prod.yaml*'
     
 env:
   AWS_REGION: eu-west-1                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: client           # set this to your Amazon ECR repository name
+  ECR_REPOSITORY: client     # set this to your Amazon ECR repository name
   ECS_SERVICE: client-srv                # set this to your Amazon ECS service name
   ECS_CLUSTER: reel-maker-cluster                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: ./client/task-definition.json # set this to the path to your Amazon ECS task definition
@@ -67,3 +67,4 @@ jobs:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+
