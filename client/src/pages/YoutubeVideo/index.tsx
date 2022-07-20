@@ -22,7 +22,7 @@ const YoutubeVideo = () => {
   const [processedVideos, setProcessedVideos] = useState<ProcessedVideoType>();
 
   const processedVideosProvider = useProcessedVideosProvider(videoId || "", false);
-  const [alignment, setAlignment] = useState<"clips" | "shorts">("clips");
+  const [alignment, setAlignment] = useState<"clips" | "shorts">("shorts");
   const [page, setPage] = useState(1);
   const VIDEOS_PER_PAGE = 8;
 
@@ -60,7 +60,7 @@ const YoutubeVideo = () => {
     }
   };
 
-  const handleChange = (event: React.MouseEvent<HTMLElement>, newAlignment: "shorts" | "clips") => {
+  const handleToggleChange = (event: React.MouseEvent<HTMLElement>, newAlignment: "shorts" | "clips") => {
     setPage(1);
     setAlignment(newAlignment);
   };
@@ -85,9 +85,9 @@ const YoutubeVideo = () => {
               {areAllDownloading ? <CircularProgress size="1.5rem" /> : "Download All"}
             </Button>
           </div>
-          <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleChange}>
-            <ToggleButton value="clips">Clips ({processedVideos.clips.length})</ToggleButton>
+          <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleToggleChange}>
             <ToggleButton value="shorts">Shorts ({processedVideos.shorts.length})</ToggleButton>
+            {processedVideos.clips.length ? <ToggleButton value="clips">Clips ({processedVideos.clips.length})</ToggleButton> : null}
           </ToggleButtonGroup>
           <br />
           <br />
