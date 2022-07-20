@@ -33,7 +33,6 @@
     ],
     "family": "processor-dev-task",
     "networkMode": "bridge",
-    "taskRoleArn": "AWS-service-access-role",
     "volumes": [],
 
     "placementConstraints": []
