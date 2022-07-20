@@ -17,11 +17,11 @@ const navigation = [
     title: "Videos",
     to: "/dashboard/youtube-videos",
   },
-  {
-    icon: <SlowMotionVideoIcon fontSize="large" />,
-    title: "Generate",
-    to: "/dashboard/generate",
-  },
+  // {
+  //   icon: <SlowMotionVideoIcon fontSize="large" />,
+  //   title: "Generate",
+  //   to: "/dashboard/generate",
+  // },
   {
     icon: <AccountCircleIcon fontSize="large" />,
     title: "Account",
