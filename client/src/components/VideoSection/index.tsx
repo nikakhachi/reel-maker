@@ -1,5 +1,5 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Tooltip, Typography } from "@mui/material";
-import { useState } from "react";
+import { Button, Card, CardActions, CardContent, CardMedia, CircularProgress, SnackbarContent, Tooltip, Typography } from "@mui/material";
+import { useContext, useState } from "react";
 import { YoutubeVideoType } from "../../hooks/useYoutubeVideosProvider";
 import { ClipVideoType, ShortVideoType } from "../../hooks/useProcessedVideosProvider";
 import styles from "./styles.module.css";
@@ -10,6 +10,7 @@ import { downloadFromLinks } from "../../utils/downloadFromLinks";
 import InfoIcon from "@mui/icons-material/Info";
 import { api, API_ENDPOINT } from "../../api";
 import { CLOUDFRONT_URL } from "../../constants";
+import { SnackbarContext } from "../../context/SnackbarContext";
 interface IProps {
   youtubeVideos?: YoutubeVideoType[];
   clipVideos?: ClipVideoType[];
@@ -18,8 +19,22 @@ interface IProps {
 }
 
 const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps) => {
+  const snackbarContext = useContext(SnackbarContext);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [wholeVideoIdDownloading, setWholeVideoIdDownloading] = useState("");
   const navigate = useNavigate();
+
+  const handleWholeVideoDownload = async (videoId: string) => {
+    setWholeVideoIdDownloading(videoId);
+    try {
+      await downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${videoId}`]);
+      snackbarContext?.openSnackbar("Downloading has started", "success");
+    } catch (error) {
+      snackbarContext?.openSnackbar("Error while downloading video", "error");
+    } finally {
+      setWholeVideoIdDownloading("");
+    }
+  };
 
   return (
     <>
@@ -51,11 +66,12 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                         See All Videos
                       </Button>
                       <Button
+                        disabled={wholeVideoIdDownloading !== ""}
                         variant="outlined"
                         size="small"
-                        onClick={() => downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${youtubeVideo.videoId}`])}
+                        onClick={() => handleWholeVideoDownload(youtubeVideo.videoId)}
                       >
-                        Download All
+                        {youtubeVideo.videoId === wholeVideoIdDownloading ? <CircularProgress size="1.3rem" /> : "Download All"}
                       </Button>
                     </CardActions>
                   )}

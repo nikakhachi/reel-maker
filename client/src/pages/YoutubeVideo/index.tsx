@@ -1,9 +1,10 @@
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_ENDPOINT } from "../../api";
 import Loader from "../../components/Loader";
 import VideoSection from "../../components/VideoSection";
+import { SnackbarContext } from "../../context/SnackbarContext";
 import { UserContext } from "../../context/UserContext";
 import { ProcessedVideoType, useProcessedVideosProvider } from "../../hooks/useProcessedVideosProvider";
 import { downloadFromLinks } from "../../utils/downloadFromLinks";
@@ -11,9 +12,12 @@ import styles from "./styles.module.css";
 
 const YoutubeVideo = () => {
   const userContext = useContext(UserContext);
+  const snackbarContext = useContext(SnackbarContext);
+
   const { videoId } = useParams<{ videoId: string }>();
   const navigate = useNavigate();
 
+  const [areAllDownloading, setAreAllDownloading] = useState(false);
   const [processedVideos, setProcessedVideos] = useState<ProcessedVideoType>();
 
   const processedVideosProvider = useProcessedVideosProvider(videoId || "", false);
@@ -40,6 +44,18 @@ const YoutubeVideo = () => {
     }
   }, [processedVideosProvider.error]);
 
+  const handleAllDownload = async () => {
+    setAreAllDownloading(true);
+    try {
+      await downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${videoId}`]);
+      snackbarContext?.openSnackbar("Downloading has started", "success");
+    } catch (error) {
+      snackbarContext?.openSnackbar("Error while downloading video", "error");
+    } finally {
+      setAreAllDownloading(false);
+    }
+  };
+
   return (
     <div style={{ padding: "1rem" }}>
       {!processedVideos ? (
@@ -48,12 +64,8 @@ const YoutubeVideo = () => {
         <>
           <div className={styles.header}>
             <iframe width="600" height="300" src={`https://www.youtube.com/embed/${videoId}`} />
-            <Button
-              onClick={() => downloadFromLinks([`${API_ENDPOINT}/v1/user/videos/download/${videoId}`])}
-              variant="contained"
-              sx={{ marginBottom: "2rem" }}
-            >
-              Download All
+            <Button onClick={handleAllDownload} variant="contained" sx={{ marginBottom: "2rem" }} disabled={areAllDownloading}>
+              {areAllDownloading ? <CircularProgress size="1.5rem" /> : "Download All"}
             </Button>
           </div>
 
