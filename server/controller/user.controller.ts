@@ -77,6 +77,7 @@ export const startVideoProcessingController = async (req: Request, res: Response
         logger.error(`Undefined video duration on video : ${videoId}`);
         new InternalServerErrorException(res, "Internal Server Error");
       });
+    logger.debug(`Duration is ${videoDuration}`);
     const transcriptSecondsLeft =
       (userSubscriptionData?.transcriptionSeconds || TRANSRIPTION_SECONDS_FOR_FREE_TRIAL) - user.secondsTranscripted;
     if (transcriptSecondsLeft < Math.round(videoDuration))
