@@ -1,8 +1,7 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:037049504876:task-definition/server-task:1",
     "containerDefinitions": [
         {
-            "name": "server-",
+            "name": "server",
             "image": "037049504876.dkr.ecr.eu-west-1.amazonaws.com/server:latest",
             "cpu": 0,
             "memoryReservation": 256,
@@ -34,29 +33,12 @@
     ],
     "family": "server-task",
     "networkMode": "bridge",
-    "revision": 1,
     "volumes": [],
-    "status": "ACTIVE",
-    "requiresAttributes": [
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
-        }
-    ],
-    "placementConstraints": [],
-    "compatibilities": [
-        "EXTERNAL",
-        "EC2"
-    ],
-    "requiresCompatibilities": [],
-    "registeredAt": "2021-12-03T12:59:33.260000+04:00",
-    "registeredBy": "arn:aws:iam::037049504876:user/rati"
+  
+
+    "placementConstraints": []
+ 
+
+   
+
 }
