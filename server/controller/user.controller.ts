@@ -21,6 +21,7 @@ import { getVideoDurationInSeconds } from "get-video-duration";
 import { getUserSubscriptionPlan } from "../services/stripe.service";
 import { FREE_TRIAL_DURAITON_IN_DAYS, TRANSRIPTION_SECONDS_FOR_FREE_TRIAL } from "../constants";
 import moment from "moment";
+import { getDurationOfYoutubeVideo } from "../services/getDurationOfYoutubeVideo";
 
 export const validateUserController = async (req: Request, res: Response) => {
   logger.debug("Send Credentials For User Validation");
@@ -70,7 +71,12 @@ export const startVideoProcessingController = async (req: Request, res: Response
   try {
     mp4Link = await getMP4LinkOfYoutubeVideo(`${videoId}`);
     // videoDuration = await getVideoDurationInSeconds(mp4Link);
-    videoDuration = 500;
+    videoDuration = await getDurationOfYoutubeVideo(videoId);
+    if (!videoDuration)
+      return sendError(() => {
+        logger.error(`Undefined video duration on video : ${videoId}`);
+        new InternalServerErrorException(res, "Internal Server Error");
+      });
     const transcriptSecondsLeft =
       (userSubscriptionData?.transcriptionSeconds || TRANSRIPTION_SECONDS_FOR_FREE_TRIAL) - user.secondsTranscripted;
     if (transcriptSecondsLeft < Math.round(videoDuration))
