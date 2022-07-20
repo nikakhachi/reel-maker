@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Pagination, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_ENDPOINT } from "../../api";
@@ -21,6 +21,9 @@ const YoutubeVideo = () => {
   const [processedVideos, setProcessedVideos] = useState<ProcessedVideoType>();
 
   const processedVideosProvider = useProcessedVideosProvider(videoId || "", false);
+  const [alignment, setAlignment] = useState<"clips" | "shorts">("clips");
+  const [page, setPage] = useState(1);
+  const VIDEOS_PER_PAGE = 8;
 
   useEffect(() => {
     const processedVideosInCache = userContext?.youtubeVideosFullData.find((item) => item.videoId === videoId);
@@ -56,6 +59,15 @@ const YoutubeVideo = () => {
     }
   };
 
+  const handleChange = (event: React.MouseEvent<HTMLElement>, newAlignment: "shorts" | "clips") => {
+    setPage(1);
+    setAlignment(newAlignment);
+  };
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
   return (
     <div style={{ padding: "1rem" }}>
       {!processedVideos ? (
@@ -63,14 +75,34 @@ const YoutubeVideo = () => {
       ) : (
         <>
           <div className={styles.header}>
-            <iframe width="600" height="300" src={`https://www.youtube.com/embed/${videoId}`} />
+            {/* <iframe width="300" height="150" src={`https://www.youtube.com/embed/${videoId}`} /> */}
+            <Typography variant="h2">{videoId}</Typography>
             <Button onClick={handleAllDownload} variant="contained" sx={{ marginBottom: "2rem" }} disabled={areAllDownloading}>
               {areAllDownloading ? <CircularProgress size="1.5rem" /> : "Download All"}
             </Button>
           </div>
-
-          <VideoSection title="Clips" clipVideos={processedVideos.clips} />
-          <VideoSection title="Shorts" shortVideos={processedVideos.shorts} />
+          <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleChange}>
+            <ToggleButton value="clips">Clips</ToggleButton>
+            <ToggleButton value="shorts">Shorts</ToggleButton>
+          </ToggleButtonGroup>
+          <br />
+          <br />
+          <Pagination
+            count={Math.ceil(processedVideos[alignment === "clips" ? "clips" : "shorts"].length / 10)}
+            page={page}
+            onChange={handlePageChange}
+          />
+          {alignment === "clips" ? (
+            <VideoSection title="Clips" clipVideos={processedVideos.clips.slice((page - 1) * VIDEOS_PER_PAGE, page * VIDEOS_PER_PAGE)} />
+          ) : (
+            <VideoSection title="Shorts" shortVideos={processedVideos.shorts.slice((page - 1) * VIDEOS_PER_PAGE, page * VIDEOS_PER_PAGE)} />
+          )}
+          <Pagination
+            count={Math.ceil(processedVideos[alignment === "clips" ? "clips" : "shorts"].length / 10)}
+            page={page}
+            onChange={handlePageChange}
+          />
+          <br />
         </>
       )}
     </div>

@@ -1,4 +1,15 @@
-import { Button, Card, CardActions, CardContent, CardMedia, CircularProgress, SnackbarContent, Tooltip, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  CircularProgress,
+  Grid,
+  SnackbarContent,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useContext, useState } from "react";
 import { YoutubeVideoType } from "../../hooks/useYoutubeVideosProvider";
 import { ClipVideoType, ShortVideoType } from "../../hooks/useProcessedVideosProvider";
@@ -11,6 +22,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { api, API_ENDPOINT } from "../../api";
 import { CLOUDFRONT_URL } from "../../constants";
 import { SnackbarContext } from "../../context/SnackbarContext";
+import VideoPreviewDialog from "../VideoPreviewDialog";
 interface IProps {
   youtubeVideos?: YoutubeVideoType[];
   clipVideos?: ClipVideoType[];
@@ -22,6 +34,10 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
   const snackbarContext = useContext(SnackbarContext);
   const [isExpanded, setIsExpanded] = useState(true);
   const [wholeVideoIdDownloading, setWholeVideoIdDownloading] = useState("");
+  const [videoForPreview, setVideoForPreview] = useState({
+    title: "",
+    url: "",
+  });
   const navigate = useNavigate();
 
   const handleWholeVideoDownload = async (videoId: string) => {
@@ -83,9 +99,9 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
       )}
       {clipVideos && (
         <div key={title}>
-          <p onClick={() => setIsExpanded(!isExpanded)} className={styles.videoSectionTitle}>
+          {/* <p onClick={() => setIsExpanded(!isExpanded)} className={styles.videoSectionTitle}>
             {title} - {clipVideos.length} {!isExpanded ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-          </p>
+          </p> */}
           <div className={styles.videoCardContainer}>
             {clipVideos.map((clip) => (
               <div key={clip.videoUrl} style={isExpanded ? {} : { display: "none" }}>
@@ -99,7 +115,7 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                       {clip.headline}
                     </Typography>
                   </CardContent>
-                  <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <CardActions>
                     <Button
                       variant="outlined"
                       onClick={() => downloadFromLinks([`${CLOUDFRONT_URL}/${clip.videoUrl}`, `${CLOUDFRONT_URL}/${clip.subtitlesUrl}`])}
@@ -107,6 +123,20 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                     >
                       Download
                     </Button>
+
+                    <Button
+                      onClick={() =>
+                        setVideoForPreview({
+                          url: `${CLOUDFRONT_URL}/${clip.videoUrl}`,
+                          title: clip.gist,
+                        })
+                      }
+                      variant="outlined"
+                      size="small"
+                    >
+                      View Video
+                    </Button>
+
                     <Tooltip title={<Typography variant="subtitle2">{clip.summary}</Typography>}>
                       <InfoIcon color="primary" />
                     </Tooltip>
@@ -119,9 +149,9 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
       )}
       {shortVideos && (
         <div key={title}>
-          <p onClick={() => setIsExpanded(!isExpanded)} className={styles.videoSectionTitle}>
+          {/* <p onClick={() => setIsExpanded(!isExpanded)} className={styles.videoSectionTitle}>
             {title} - {shortVideos.length} {!isExpanded ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-          </p>
+          </p> */}
           <div className={styles.videoCardContainer}>
             {shortVideos.map((short) => (
               <div key={short.videoUrl} style={isExpanded ? {} : { display: "none" }}>
@@ -147,6 +177,18 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
                     >
                       Download
                     </Button>
+                    <Button
+                      onClick={() =>
+                        setVideoForPreview({
+                          url: `${CLOUDFRONT_URL}/${short.videoUrl}`,
+                          title: short.label,
+                        })
+                      }
+                      variant="outlined"
+                      size="small"
+                    >
+                      View Video
+                    </Button>
                   </CardActions>
                 </Card>
               </div>
@@ -154,6 +196,17 @@ const VideoSection = ({ youtubeVideos, title, clipVideos, shortVideos }: IProps)
           </div>
         </div>
       )}
+      <VideoPreviewDialog
+        open={videoForPreview.url !== ""}
+        handleClose={() =>
+          setVideoForPreview({
+            title: "",
+            url: "",
+          })
+        }
+        videoUrl={videoForPreview.url}
+        title={videoForPreview.title}
+      />
     </>
   );
 };
