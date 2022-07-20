@@ -1,7 +1,6 @@
 import { config, S3 } from "aws-sdk";
 import { Response } from "express";
 const s3Zip = require("s3-zip");
-const XmlStream = require("xml-stream");
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
